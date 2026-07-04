@@ -2,21 +2,16 @@
 import React, { useState } from 'react';
 import HomeTab from './HomeTab';
 import ProfileTab from './ProfileTab';
+import MarketplaceTab from './MarketplaceTab';
 import { catThemes } from './themeStyles';
 import { 
   Home, Gamepad2, ShoppingBag, User, Bell, Settings, Info, Search, PlusCircle 
 } from 'lucide-react';
 
-// Temporary fallback shells to keep your page running smoothly until you write them
+// Temporary fallback shell to keep your page running smoothly until you write it
 const GameScreen = () => (
-  <div className="p-8 text-center font-bold bg-white rounded-2xl border border-dashed">
-    🎮 Game Learn Section Component Loaded Successfully!
-  </div>
-);
-
-const MarketplaceTab = () => (
-  <div className="p-8 text-center font-bold bg-white rounded-2xl border border-dashed">
-    🛒 Adoption Marketplace Section Component Loaded Successfully!
+  <div className="p-8 text-center font-bold bg-white rounded-2xl border border-dashed text-slate-400">
+    <span>🎮</span> Game Learn Section Component Loaded Successfully!
   </div>
 );
 
@@ -25,7 +20,7 @@ export default function App() {
   const [currentTheme, setCurrentTheme] = useState('orange');
   const theme = catThemes[currentTheme] || catThemes.orange;
 
-  // The active content controller matching your exact file structure definitions
+  // The active content controller mapping your clean layout modules
   const renderTabContent = () => {
     switch (currentTab) {
       case 'home':
@@ -33,15 +28,15 @@ export default function App() {
       case 'game':
         return <GameScreen />;
       case 'adoption':
-        return <MarketplaceTab />;
+        return <MarketplaceTab currentTheme={currentTheme} />;
       case 'profile':
         return <ProfileTab currentTheme={currentTheme} />;
       case 'notifications':
-        return <div className="p-8 text-center font-bold bg-white rounded-2xl">🔔 Notifications Channel Coming Soon!</div>;
+        return <div className="p-8 text-center font-bold bg-white rounded-2xl border">🔔 Notifications Channel Coming Soon!</div>;
       case 'settings':
-        return <div className="p-8 text-center font-bold bg-white rounded-2xl">⚙️ Configuration Settings Coming Soon!</div>;
+        return <div className="p-8 text-center font-bold bg-white rounded-2xl border">⚙️ Configuration Settings Coming Soon!</div>;
       case 'about':
-        return <div className="p-8 text-center font-bold bg-white rounded-2xl">ℹ️ About Us Project Specs Coming Soon!</div>;
+        return <div className="p-8 text-center font-bold bg-white rounded-2xl border">ℹ️ About Us Project Specs Coming Soon!</div>;
       default:
         return <HomeTab currentTheme={currentTheme} />;
     }
@@ -153,7 +148,7 @@ export default function App() {
 
         {/* Target viewport injection viewport segment box */}
         <main className="p-8 flex-1">
-          <div className="animation-fadeIn">
+          <div>
             {renderTabContent()}
           </div>
         </main>
