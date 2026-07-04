@@ -1,182 +1,163 @@
+// src/App.jsx
 import React, { useState } from 'react';
-import GameScreen from './GameScreen';
-import SocialTab from './SocialTab';
-import MarketplaceTab from './MarketplaceTab';
+import HomeTab from './HomeTab';
 import ProfileTab from './ProfileTab';
-import { BookOpen, Users, ShoppingBag, User } from 'lucide-react';
+import { catThemes } from './themeStyles';
+import { 
+  Home, Gamepad2, ShoppingBag, User, Bell, Settings, Info, Search, PlusCircle 
+} from 'lucide-react';
+
+// Temporary fallback shells to keep your page running smoothly until you write them
+const GameScreen = () => (
+  <div className="p-8 text-center font-bold bg-white rounded-2xl border border-dashed">
+    🎮 Game Learn Section Component Loaded Successfully!
+  </div>
+);
+
+const MarketplaceTab = () => (
+  <div className="p-8 text-center font-bold bg-white rounded-2xl border border-dashed">
+    🛒 Adoption Marketplace Section Component Loaded Successfully!
+  </div>
+);
 
 export default function App() {
-  // Setup dynamic tab routing architecture matching specs
-  const [activeTab, setActiveTab] = useState('learn');
+  const [currentTab, setCurrentTab] = useState('home');
+  const [currentTheme, setCurrentTheme] = useState('orange');
+  const theme = catThemes[currentTheme] || catThemes.orange;
 
-  // Dynamic Content Router Module Engine
+  // The active content controller matching your exact file structure definitions
   const renderTabContent = () => {
-    switch (activeTab) {
-      case 'learn':
+    switch (currentTab) {
+      case 'home':
+        return <HomeTab currentTheme={currentTheme} />;
+      case 'game':
         return <GameScreen />;
-      case 'social':
-        return <SocialTab />;
-      case 'marketplace':
+      case 'adoption':
         return <MarketplaceTab />;
       case 'profile':
-        return <ProfileTab />;
+        return <ProfileTab currentTheme={currentTheme} />;
+      case 'notifications':
+        return <div className="p-8 text-center font-bold bg-white rounded-2xl">🔔 Notifications Channel Coming Soon!</div>;
+      case 'settings':
+        return <div className="p-8 text-center font-bold bg-white rounded-2xl">⚙️ Configuration Settings Coming Soon!</div>;
+      case 'about':
+        return <div className="p-8 text-center font-bold bg-white rounded-2xl">ℹ️ About Us Project Specs Coming Soon!</div>;
       default:
-        return <GameScreen />;
+        return <HomeTab currentTheme={currentTheme} />;
     }
   };
 
+  const navigationItems = [
+    { id: 'home', label: 'Home', icon: Home },
+    { id: 'game', label: 'Game Learn', icon: Gamepad2 },
+    { id: 'adoption', label: 'Adoption Marketplace', icon: ShoppingBag },
+    { id: 'profile', label: 'Profile', icon: User },
+    { id: 'notifications', label: 'Notifications', icon: Bell },
+    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'about', label: 'About Us', icon: Info },
+  ];
+
   return (
-    <div style={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      minHeight: '100vh', 
-      backgroundColor: '#f8fafc', // Warm soft neutralize light backdrop base
-      fontFamily: '"Quicksand", "Nunito", system-ui, -apple-system, sans-serif',
-      color: '#334155'
-    }}>
+    <div className="flex min-h-screen font-sans antialiased transition-colors duration-300" 
+         style={{ backgroundColor: theme.background, color: theme.text }}>
       
-      {/* ================= HEADER SECTION ================= */}
-      <header style={{
-        padding: '30px 20px',
-        background: 'linear-gradient(135deg, #fae8ff 0%, #fce7f3 100%)', // Soft Ghibli Purple/Pink cloud gradient
-        borderBottom: '2px solid #f3e8ff',
-        textAlign: 'center',
-        boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.05)'
-      }}>
-        <h1 style={{
-          margin: '0 0 8px 0',
-          fontSize: '42px',
-          fontWeight: '800',
-          color: '#7e22ce', // Warm Deep Purple Accent
-          letterSpacing: '-0.5px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '12px'
-        }}>
-          🐱 PurrstStep Portal
-        </h1>
-        <p style={{
-          margin: 0,
-          fontSize: '16px',
-          fontWeight: '500',
-          color: '#a21caf', // Secondary Warm Fuchsia Text
-        }}>
-          A cozy path to companion discovery, social sharing, and interactive gaming
-        </p>
-      </header>
+      {/* =========================================================================
+          LEFT SIDEBAR NAVIGATION MODULE
+          ========================================================================= */}
+      <aside className="w-64 bg-white border-r p-6 flex flex-col justify-between fixed h-full z-10"
+             style={{ borderColor: theme.border }}>
+        <div>
+          {/* Brand Identity Label */}
+          <div className="flex items-center gap-2 mb-8 px-2">
+            <span className="text-2xl">🐾</span>
+            <span className="text-xl font-black tracking-tight" style={{ color: theme.primary }}>PawSpace</span>
+          </div>
 
-      {/* ================= TAB NAVIGATION SECTION ================= */}
-      <nav style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '24px 20px 12px 20px',
-        backgroundColor: '#f8fafc',
-      }}>
-        <div style={{ 
-          display: 'flex', 
-          gap: '16px', 
-          flexWrap: 'wrap', 
-          justifyContent: 'center',
-          maxWidth: '1280px',
-          width: '100%'
-        }}>
+          {/* Core Navigation Triggers */}
+          <nav className="space-y-1">
+            {navigationItems.map((item) => {
+              const IconComponent = item.icon;
+              const isActive = currentTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setCurrentTab(item.id)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl transition-all duration-200 group ${
+                    isActive ? 'shadow-sm font-extrabold' : 'opacity-60 hover:opacity-100'
+                  }`}
+                  style={{
+                    backgroundColor: isActive ? theme.cardBg : 'transparent',
+                    color: isActive ? theme.primary : theme.text
+                  }}
+                >
+                  <IconComponent className="w-5 h-5 transition-transform group-hover:scale-105" />
+                  {item.label}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Global Floating Actions Addon Trigger */}
+        <div className="pt-4 border-t" style={{ borderColor: theme.border }}>
+          <button className="w-full py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-transform hover:scale-[1.02]"
+                  style={{ backgroundColor: theme.primary, color: theme.background }}>
+            <PlusCircle className="w-4 h-4" />
+            Add Post
+          </button>
+        </div>
+      </aside>
+
+      {/* =========================================================================
+          MAIN APPLICATION RUNTIME LAYOUT SHELL
+          ========================================================================= */}
+      <div className="flex-1 pl-64 flex flex-col min-h-screen">
+        
+        {/* Top Header Search Deck utility section */}
+        <header className="h-16 border-b bg-white/50 backdrop-blur-md px-8 flex items-center justify-between sticky top-0 z-20"
+                style={{ borderColor: theme.border }}>
+          <div className="relative w-96">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 opacity-40" />
+            <input 
+              type="text" 
+              placeholder="Search cats, people, posts..." 
+              className="w-full pl-10 pr-4 py-2 text-xs font-medium rounded-full bg-white border outline-none focus:ring-2 transition-all"
+              style={{ borderColor: theme.border }}
+            />
+          </div>
           
-          <button 
-            onClick={() => setActiveTab('learn')}
-            style={tabButtonStyle(activeTab === 'learn', 'purple')}
-          >
-            <BookOpen size={18} /> Learn & Play
-          </button>
+          {/* Quick Realtime Active Theme Configuration Toggles */}
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1.5 bg-white p-1 rounded-full border shadow-sm" style={{ borderColor: theme.border }}>
+              {Object.keys(catThemes).map((themeKey) => (
+                <button
+                  key={themeKey}
+                  onClick={() => setCurrentTheme(themeKey)}
+                  className="w-6 h-6 rounded-full border text-[9px] font-black flex items-center justify-center transition-all hover:scale-110"
+                  style={{ 
+                    backgroundColor: catThemes[themeKey].primary, 
+                    borderColor: currentTheme === themeKey ? theme.text : 'transparent',
+                    color: catThemes[themeKey].background
+                  }}
+                  title={`Switch to ${themeKey}`}
+                >
+                  {themeKey[0].toUpperCase()}
+                </button>
+              ))}
+            </div>
+            <div className="w-8 h-8 rounded-full bg-slate-200 border-2 flex items-center justify-center overflow-hidden shadow-sm" style={{ borderColor: theme.primary }}>
+              <span className="text-xs">🐱</span>
+            </div>
+          </div>
+        </header>
 
-          <button 
-            onClick={() => setActiveTab('social')}
-            style={tabButtonStyle(activeTab === 'social', 'cyan')}
-          >
-            <Users size={18} /> Community Posts
-          </button>
-
-          <button 
-            onClick={() => setActiveTab('marketplace')}
-            style={tabButtonStyle(activeTab === 'marketplace', 'green')}
-          >
-            <ShoppingBag size={18} /> Cats & Market
-          </button>
-
-          <button 
-            onClick={() => setActiveTab('profile')}
-            style={tabButtonStyle(activeTab === 'profile', 'indigo')}
-          >
-            <User size={18} /> Explorer Profile
-          </button>
-
-        </div>
-      </nav>
-
-      {/* ================= DYNAMIC VIEWPORT WINDOW ================= */}
-      <main style={{ 
-        flexGrow: 1, 
-        width: '100%',
-        maxWidth: '1280px', 
-        margin: '0 auto',
-        padding: '12px 24px 40px 24px',
-        boxSizing: 'border-box'
-      }}>
-        <div style={{
-          animation: 'fadeIn 0.4s ease-out',
-          background: 'rgba(255, 255, 255, 0.7)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          borderRadius: '24px',
-          border: '1px solid rgba(255, 255, 255, 0.8)',
-          boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.04)',
-          padding: '20px'
-        }}>
-          {renderTabContent()}
-        </div>
-      </main>
-
-      {/* Embedded Global Soft Keyframes for UI Animations */}
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(8px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
-
+        {/* Target viewport injection viewport segment box */}
+        <main className="p-8 flex-1">
+          <div className="animation-fadeIn">
+            {renderTabContent()}
+          </div>
+        </main>
+      </div>
     </div>
   );
-}
-
-// Ghibli Spec Adaptive Button Styling Factory Module
-function tabButtonStyle(isActive, themeColor) {
-  // Dynamic color configuration system maps directly to specs definitions
-  const themes = {
-    purple: { bg: 'linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%)', text: '#6b21a8', border: '#d8b4fe' },
-    cyan: { bg: 'linear-gradient(135deg, #ecfeff 0%, #cffafe 100%)', text: '#115e59', border: '#99f6e4' },
-    green: { bg: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)', text: '#166534', border: '#bbf7d0' },
-    indigo: { bg: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)', text: '#3730a3', border: '#a5b4fc' }
-  };
-
-  const currentTheme = themes[themeColor] || themes.purple;
-
-  return {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    padding: '14px 26px',
-    borderRadius: '24px', // Hard specification target 24px radius high bubble layout
-    border: isActive ? `2px solid ${currentTheme.border}` : '2px solid transparent',
-    background: isActive ? currentTheme.bg : 'rgba(241, 245, 249, 0.8)',
-    color: isActive ? currentTheme.text : '#64748b',
-    cursor: 'pointer',
-    fontWeight: '700',
-    fontSize: '15px',
-    fontFamily: 'inherit',
-    boxShadow: isActive ? '0 10px 20px -6px rgba(0,0,0,0.06)' : 'none',
-    transform: isActive ? 'scale(1.03)' : 'scale(1)',
-    transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-    outline: 'none'
-  };
 }
