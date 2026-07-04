@@ -4,6 +4,7 @@ import HomeTab from './HomeTab';
 import ProfileTab from './ProfileTab';
 import MarketplaceTab from './MarketplaceTab';
 import GameScreen from './GameScreen';
+import NotificationsTab from './NotificationsTab';
 import { catThemes } from './themeStyles';
 import { 
   Home, Gamepad2, ShoppingBag, User, Bell, Settings, Info, Search, PlusCircle 
@@ -26,7 +27,7 @@ export default function App() {
       case 'profile':
         return <ProfileTab currentTheme={currentTheme} />;
       case 'notifications':
-        return <div className="p-8 text-center font-bold bg-white rounded-2xl border">🔔 Notifications Channel Coming Soon!</div>;
+          return <NotificationsTab currentTheme={currentTheme} />;
       case 'settings':
         return <div className="p-8 text-center font-bold bg-white rounded-2xl border">⚙️ Configuration Settings Coming Soon!</div>;
       case 'about':
