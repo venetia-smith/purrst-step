@@ -3,17 +3,11 @@ import React, { useState } from 'react';
 import HomeTab from './HomeTab';
 import ProfileTab from './ProfileTab';
 import MarketplaceTab from './MarketplaceTab';
+import GameScreen from './GameScreen';
 import { catThemes } from './themeStyles';
 import { 
   Home, Gamepad2, ShoppingBag, User, Bell, Settings, Info, Search, PlusCircle 
 } from 'lucide-react';
-
-// Temporary fallback shell to keep your page running smoothly until you write it
-const GameScreen = () => (
-  <div className="p-8 text-center font-bold bg-white rounded-2xl border border-dashed text-slate-400">
-    <span>🎮</span> Game Learn Section Component Loaded Successfully!
-  </div>
-);
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState('home');
@@ -26,7 +20,7 @@ export default function App() {
       case 'home':
         return <HomeTab currentTheme={currentTheme} />;
       case 'game':
-        return <GameScreen />;
+          return <GameScreen currentTheme={currentTheme} />;
       case 'adoption':
         return <MarketplaceTab currentTheme={currentTheme} />;
       case 'profile':

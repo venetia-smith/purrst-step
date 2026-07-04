@@ -1,6 +1,9 @@
+// src/GameScreen.jsx
 import React, { useState, useEffect, useRef } from 'react';
+import { catThemes } from './themeStyles';
+import { Volume2, VolumeX, Play, HelpCircle, FileText, ChevronRight, Target } from 'lucide-react';
 
-export default function GameScreen() {
+export default function GameScreen({ currentTheme = 'orange' }) {
   // Game stages: 'intro', 'story_scene', 'entrance_scene', 'kitten_revealed'
   const [currentStage, setCurrentStage] = useState('intro');
   const [storyIndex, setStoryIndex] = useState(0);
@@ -8,6 +11,7 @@ export default function GameScreen() {
   const [isPlayingBGM, setIsPlayingBGM] = useState(false);
   const [isFading, setIsFading] = useState(false);
 
+  const theme = catThemes[currentTheme] || catThemes.orange;
   const bgmRef = useRef(null);
 
   // Scene 1 Narrative (Top Left Overlay)
@@ -72,7 +76,6 @@ export default function GameScreen() {
         setCurrentStage('entrance_scene');
         setEntranceIndex(0);
         setIsFading(false);
-        // Triggers your custom indoor meow file when entering the frame
         playSoundEffect('cat_meow_inside.mp3', 0.6); 
       }, 400);
     }
@@ -86,282 +89,189 @@ export default function GameScreen() {
   };
 
   const handleOpenDoor = () => {
-    // Triggers your custom creaking door asset file
     playSoundEffect('creaky_door.mp3', 0.6);
     setIsFading(true);
     
     setTimeout(() => {
       setCurrentStage('kitten_revealed');
       setIsFading(false);
-      // Softens the background storm slightly once the hallway door context shifts
       if (bgmRef.current) {
         bgmRef.current.volume = 0.2; 
       }
-      // Triggers your outside meow asset clip
       playSoundEffect('cat_meow.mp3', 0.55);
     }, 400);
   };
 
   return (
-    <div style={{ position: 'relative', width: '100%', maxWidth: '1024px', margin: '0 auto' }}>
-      
-      {/* GLOBAL AUDIO PROTOCOL CONTROLLER */}
-      <button 
-        onClick={toggleMusic}
+    <div className="max-w-5xl mx-auto space-y-6">
+      {/* HEADER SPECS */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-black tracking-tight flex items-center gap-2">
+            <span>🎮</span> Interactive Learn Room
+          </h2>
+          <p className="text-sm opacity-70">Make decisions, decipher sounds, and solve story branches safely.</p>
+        </div>
+
+        {/* CONTROLLER AUDIO TOGGLE */}
+        <button 
+          onClick={toggleMusic}
+          className="flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-full border bg-white shadow-sm transition-all hover:scale-105 active:scale-95"
+          style={{ borderColor: theme.border, color: theme.primary }}
+        >
+          {isPlayingBGM ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+          {isPlayingBGM ? 'AUDIO ON' : 'AUDIO OFF'}
+        </button>
+      </div>
+
+      {/* CORE VIEWPORT GRAPHICS MAIN STAGE */}
+      <div 
+        className="relative w-full h-[580px] rounded-3xl overflow-hidden shadow-xl border-4 transition-all duration-300 flex flex-col"
         style={{
-          position: 'absolute',
-          top: '20px',
-          right: '20px',
-          zIndex: 50,
-          padding: '6px 14px',
-          borderRadius: '0px',
-          border: '1px solid #334155',
-          backgroundColor: isPlayingBGM ? '#1e293b' : '#020617',
-          color: '#38bdf8',
-          cursor: 'pointer',
-          fontFamily: '"Courier New", Courier, monospace',
-          fontWeight: '900',
-          fontSize: '11px',
-          letterSpacing: '1px'
+          borderColor: theme.cardBg,
+          backgroundImage: `url(${
+            currentStage === 'intro' || currentStage === 'story_scene' 
+              ? '/assets/opening_scene.jpg' 
+              : '/assets/entrance.jpg'
+          })`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
         }}
       >
-        {isPlayingBGM ? 'AUDIO ON' : 'AUDIO OFF'}
-      </button>
-
-      {/* CORE VIEWPORT GRAPHICS FRAME */}
-      <div style={{
-        position: 'relative',
-        width: '100%',
-        height: '560px',
-        // Keeps the baseline room layout (entrance.jpg) active for all interactive phases
-        backgroundImage: `url(${
-          currentStage === 'intro' || currentStage === 'story_scene' 
-            ? '/assets/opening_scene.jpg' 
-            : '/assets/entrance.jpg'
-        })`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        borderRadius: '0px',
-        overflow: 'hidden',
-        boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
-        fontFamily: '"Courier New", Courier, monospace',
-        border: '3px solid #1e293b'
-      }}>
-
-        {/* OVERLAY PANEL: Drops the kitten_at_door asset squarely over the top layout */}
+        {/* OVERLAY PANEL: Drops asset onto background view frame */}
         {currentStage === 'kitten_revealed' && (
-          <div style={{
-            position: 'absolute',
-            top: '0',
-            left: '0',
-            width: '100%',
-            height: '100%',
-            backgroundImage: "url('/assets/kitten_at_door.png')",
-            backgroundSize: 'contain',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            mixBlendMode: 'dark', // Drops out deep blacks to compose perfectly onto entrance background
-            zIndex: 2
-          }} />
+          <div 
+            className="absolute inset-0 z-10 animate-fadeIn"
+            style={{
+              backgroundImage: "url('/assets/kitten_at_door.png')",
+              backgroundSize: 'contain',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              mixBlendMode: 'dark'
+            }} 
+          />
         )}
-        
-        {/* ================= STAGE 1: SYSTEM INTRO PROTOCOL ================= */}
+
+        {/* ================= STAGE 1: INTRO MENU SCREEN ================= */}
         {currentStage === 'intro' && (
-          <>
-            <div style={{
-              position: 'absolute',
-              top: '32px',
-              left: '40px',
-              color: '#ffffff',
-              fontSize: '38px',
-              fontWeight: '900',
-              letterSpacing: '2px',
-              textTransform: 'uppercase',
-              textShadow: '3px 3px 0px #0f172a'
-            }}>
-              Purrst Step 
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/40 flex flex-col justify-between p-12">
+            <div>
+              <span className="text-xs font-extrabold uppercase tracking-widest bg-white/20 text-white px-3 py-1 rounded-full backdrop-blur-md">
+                Episode 1: The Encounter
+              </span>
+              <h1 className="text-5xl font-black text-white tracking-tight mt-3 drop-shadow-md">
+                Purrst Step
+              </h1>
             </div>
 
-            <div style={{
-              position: 'absolute',
-              bottom: '40px',
-              right: '40px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px',
-              alignItems: 'flex-end'
-            }}>
-              <button onClick={handleStartGame} style={darkDomeButtonStyle(true)}>
-                PLAY GAME
+            <div className="flex flex-col gap-3 max-w-xs">
+              <button 
+                onClick={handleStartGame} 
+                className="w-full py-3.5 px-6 rounded-xl font-bold text-sm flex items-center justify-between shadow-lg text-white transition-all transform hover:scale-[1.02] active:scale-95"
+                style={{ backgroundColor: theme.primary }}
+              >
+                <span className="flex items-center gap-2"><Play className="w-4 h-4 fill-white" /> PLAY GAME</span>
+                <ChevronRight className="w-4 h-4" />
               </button>
-              <button onClick={() => alert("Instructions data stream processing...")} style={darkDomeButtonStyle(false)}>
-                INSTRUCTIONS
+              
+              <button 
+                onClick={() => alert("Follow the audio cues and click visual highlights to solve puzzles.")} 
+                className="w-full py-3 px-6 rounded-xl font-bold text-sm flex items-center gap-2 bg-white/10 backdrop-blur-md text-white border border-white/10 hover:bg-white/20 transition-all"
+              >
+                <HelpCircle className="w-4 h-4" /> INSTRUCTIONS
               </button>
-              <button onClick={() => alert("Dev signature node processing...")} style={darkDomeButtonStyle(false)}>
-                ABOUT US
-              </button>
-            </div>
-          </>
-        )}
-
-        {/* ================= STAGE 2: NARRATIVE MODULE (TOP LEFT) ================= */}
-        {currentStage === 'story_scene' && (
-          <div style={compactBoxStyle(true)}>
-            <div style={{ color: '#ffffff', fontSize: '14px', fontWeight: '700', lineHeight: '1.5' }}>
-              &gt; {storyLines[storyIndex]}
-            </div>
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
-              <button onClick={advanceStory} style={triangleButtonStyle}>►</button>
             </div>
           </div>
         )}
 
-        {/* ================= STAGE 3: INTERACTIVE HALLWAY MATRIX (BOTTOM RIGHT) ================= */}
+        {/* ================= STAGE 2: NARRATIVE MODULE ================= */}
+        {currentStage === 'story_scene' && (
+          <div className="absolute top-8 left-8 w-80 bg-white/90 backdrop-blur-md border p-6 rounded-2xl shadow-lg flex flex-col gap-4 animate-fadeIn"
+               style={{ borderColor: theme.border }}>
+            <p className="text-sm font-semibold leading-relaxed text-slate-800">
+              {storyLines[storyIndex]}
+            </p>
+            <div className="flex justify-end">
+              <button 
+                onClick={advanceStory} 
+                className="p-2 rounded-xl text-white transition-transform hover:scale-110 active:scale-95 shadow-sm"
+                style={{ backgroundColor: theme.primary }}
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ================= STAGE 3: INTERACTIVE HALLWAY MATRIX ================= */}
         {currentStage === 'entrance_scene' && (
           <>
-            <div style={compactBoxStyle(false)}>
-              <div style={{ color: '#ffffff', fontSize: '14px', fontWeight: '700', lineHeight: '1.5' }}>
-                &gt; {entranceLines[entranceIndex]}
-              </div>
+            <div className="absolute bottom-8 right-8 w-80 bg-white/90 backdrop-blur-md border p-6 rounded-2xl shadow-lg flex flex-col gap-4 animate-fadeIn"
+                 style={{ borderColor: theme.border }}>
+              <p className="text-sm font-semibold leading-relaxed text-slate-800">
+                {entranceLines[entranceIndex]}
+              </p>
               {entranceIndex < entranceLines.length - 1 && (
-                <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
-                  <button onClick={advanceEntranceStory} style={triangleButtonStyle}>►</button>
+                <div className="flex justify-end">
+                  <button 
+                    onClick={advanceEntranceStory} 
+                    className="p-2 rounded-xl text-white transition-transform hover:scale-110 active:scale-95 shadow-sm"
+                    style={{ backgroundColor: theme.primary }}
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
                 </div>
               )}
             </div>
 
-            {/* Reveals objective and button mapping when speech strings finish */}
+            {/* Target objective and door active hitbox trigger point */}
             {entranceIndex === entranceLines.length - 1 && (
               <>
-                <div style={{
-                  position: 'absolute',
-                  top: '24px',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  backgroundColor: '#7f1d1d',
-                  border: '1px solid #ef4444',
-                  color: '#ffffff',
-                  padding: '8px 16px',
-                  fontSize: '12px',
-                  fontWeight: '900',
-                  letterSpacing: '1px',
-                  zIndex: 10
-                }}>
-                  [ OBJECTIVE: INTERACT WITH THE MAIN DOOR TO SEARCH OUTSIDE ]
+                <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-rose-50 border border-rose-200 text-rose-600 px-4 py-2 rounded-full text-xs font-bold tracking-wide flex items-center gap-2 shadow-sm animate-bounce">
+                  <Target className="w-4 h-4" />
+                  <span>OBJECTIVE: INTERACT WITH THE MAIN DOOR</span>
                 </div>
 
                 <button
                   onClick={handleOpenDoor}
-                  style={{
-                    position: 'absolute',
-                    top: '90px',
-                    left: '375px',
-                    width: '240px',
-                    height: '410px',
-                    background: 'rgba(56, 189, 248, 0.05)',
-                    border: '2px dashed rgba(56, 189, 248, 0.4)',
-                    cursor: 'pointer',
-                    color: '#38bdf8',
-                    fontWeight: '900',
-                    fontSize: '12px',
-                    transition: 'all 0.2s',
-                    zIndex: 5
-                  }}
-                  onMouseEnter={(e) => e.target.style.background = 'rgba(56, 189, 248, 0.15)'}
-                  onMouseLeave={(e) => e.target.style.background = 'rgba(56, 189, 248, 0.05)'}
+                  className="absolute top-[90px] left-[375px] w-[240px] h-[410px] rounded-2xl bg-sky-500/5 border-2 border-dashed border-sky-400 cursor-pointer text-sky-500 font-extrabold text-xs transition-all flex items-center justify-center hover:bg-sky-500/10 hover:scale-[1.01]"
                 >
-                  [ OPEN DOOR ]
+                  <div className="bg-white/90 shadow-sm border border-sky-200 px-3 py-1.5 rounded-lg backdrop-blur-sm">
+                    [ OPEN DOOR ]
+                  </div>
                 </button>
               </>
             )}
           </>
         )}
 
-        {/* ================= STAGE 4: KITTEN REVEAL INTERACTION OVERLAY ================= */}
+        {/* ================= STAGE 4: KITTEN REVEAL WRAPPER ================= */}
         {currentStage === 'kitten_revealed' && (
-          <div style={{
-            position: 'absolute',
-            bottom: '40px',
-            left: '40px',
-            backgroundColor: 'rgba(2, 6, 23, 0.95)',
-            border: '2px solid #334155',
-            padding: '16px 24px',
-            color: '#38bdf8',
-            fontWeight: '900',
-            fontSize: '14px',
-            zIndex: 10
-          }}>
-            &gt; Mello: "*Meowww... Prrr*" (The storm audio dampens slightly inside the hallway context)
+          <div className="absolute bottom-8 left-8 max-w-md bg-white/95 backdrop-blur-md border p-5 rounded-2xl shadow-xl flex items-center gap-4 z-20 animate-fadeIn"
+               style={{ borderColor: theme.border }}>
+            <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-lg shadow-sm">
+              🐱
+            </div>
+            <div className="flex-1">
+              <span className="text-xs font-bold uppercase tracking-wider" style={{ color: theme.primary }}>Mello Found!</span>
+              <p className="text-sm font-medium text-slate-700 mt-0.5">
+                "*Meowww... Prrr*" <span className="text-xs opacity-60 block">(The storm outside dampens as you shelter the kitten)</span>
+              </p>
+            </div>
           </div>
         )}
 
         {/* CINEMATIC TRANSITION FADE SCREEN */}
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundColor: '#000000',
-          pointerEvents: 'none',
-          opacity: isFading ? 1 : 0,
-          transition: 'opacity 0.35s ease-in-out',
-          zIndex: 100
-        }} />
+        <div 
+          className="absolute inset-0 bg-black pointer-events-none transition-opacity duration-500 z-50"
+          style={{ opacity: isFading ? 1 : 0 }} 
+        />
+      </div>
 
+      {/* FOOTER TASKBAR NOTICE BANNER */}
+      <div className="p-4 rounded-xl text-center text-xs font-medium border flex items-center justify-center gap-2 bg-slate-50 border-slate-200 text-slate-500">
+        💡 Tip: Listen closely to environment switches! Spatial sound cues help solve puzzle objectives.
       </div>
     </div>
   );
-}
-
-function compactBoxStyle(isTopLeft) {
-  return {
-    position: 'absolute',
-    top: isTopLeft ? '40px' : 'auto',
-    bottom: isTopLeft ? 'auto' : '40px',
-    left: isTopLeft ? '40px' : 'auto',
-    right: isTopLeft ? 'auto' : '40px',
-    width: '320px',
-    backgroundColor: 'rgba(2, 6, 23, 0.92)',
-    border: '2px solid #334155',
-    padding: '16px 20px',
-    boxShadow: '0 10px 25px rgba(0,0,0,0.7)',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
-    zIndex: 10
-  };
-}
-
-const triangleButtonStyle = {
-  background: 'none',
-  border: 'none',
-  color: '#38bdf8',
-  fontSize: '16px',
-  cursor: 'pointer',
-  padding: '2px 4px',
-  display: 'flex',
-  alignItems: 'center',
-  fontWeight: '900',
-  outline: 'none'
-};
-
-function darkDomeButtonStyle(isHighlight) {
-  return {
-    width: '220px',
-    padding: '10px 20px',
-    fontSize: '14px',
-    fontWeight: '900',
-    borderRadius: '0px',
-    fontFamily: '"Courier New", Courier, monospace',
-    border: isHighlight ? '2px solid #38bdf8' : '1px solid #334155',
-    background: isHighlight ? '#0f172a' : 'rgba(2, 6, 23, 0.85)',
-    color: isHighlight ? '#38bdf8' : '#94a3b8',
-    cursor: 'pointer',
-    textAlign: 'left',
-    letterSpacing: '1px',
-    boxShadow: isHighlight ? '0 0 12px rgba(56, 189, 248, 0.25)' : 'none',
-    transition: 'all 0.15s ease',
-    outline: 'none'
-  };
 }
