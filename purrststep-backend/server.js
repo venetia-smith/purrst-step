@@ -24,6 +24,17 @@ app.get('/api/notifications', (req, res) => {
       'Someone followed you! 🐾',
       'Badge earned: Top Collector! 🏆'
     ];
+app.get('/api/marketplace', (req, res) => {
+  const items = [
+    { id: 1, name: "Premium Salmon Kitten Kibble (2kg)", category: "food", price: "₹899", image: "🍗", description: "High-protein formula perfect for growing kittens.", label: "Buy for my cat" },
+    { id: 2, name: "Sisal Rope Cat Scratcher Post", category: "toys", price: "₹650", image: "🐾", description: "Durable scratching post to protect your furniture.", label: "Buy for my cat" },
+    { id: 3, name: "Shelter Care Package (Litter + Food)", category: "donation", price: "₹1,200", image: "📦", description: "Directly shipped to rescue cats in need at our partner home.", label: "Donate this item" },
+    { id: 4, name: "Interactive Feather Wand Toy Trio", category: "toys", price: "₹249", image: "🪄", description: "Engaging stalk-and-pounce toy set for active indoor felines.", label: "Buy for my cat" },
+    { id: 5, name: "Pre-loved Cozy Feline Igloo Bed", category: "free", price: "FREE", image: "🎪", description: "Gently used plush bed washed clean, ready for a new home giveaway.", label: "Claim item" },
+    { id: 6, name: "Sample Pack: Organic Catnip Flakes", category: "free", price: "FREE", image: "🌿", description: "Complimentary single-use testing pack of premium homegrown catnip.", label: "Claim item" },
+  ];
+  res.json(items);
+});
     
     notifications.unshift({ 
       id: newId, 

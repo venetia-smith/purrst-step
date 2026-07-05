@@ -11,23 +11,24 @@ export default function AdoptionHomeTab({ theme, isDarkMode }) {
   const [favorites, setFavorites] = useState([]);
 
   // Expanded feline-exclusive dataset
+  // Adoption Dataset with updated image paths
   const adoptionPets = [
-    { id: 1, name: "Milo", type: "kitten", breed: "Indie Shorthair", age: "3 Months", gender: "Male", location: "Indiranagar, Bengaluru", image: "🐈", tag: "Urgent" },
-    { id: 2, name: "Luna", type: "kitten", breed: "Indie Stray Mix", age: "5 Months", gender: "Female", location: "Koramangala, Bengaluru", image: "🐱", tag: "Foster Home" },
-    { id: 3, name: "Cookie", type: "cat", breed: "Calico Mix", age: "1 Year", gender: "Female", location: "Jayanagar, Bengaluru", image: "🐈‍⬛", tag: "Vaccinated" },
-    { id: 4, name: "Simba", type: "cat", breed: "Persian Mix", age: "8 Months", gender: "Male", location: "HSR Layout, Bengaluru", image: "🦁", tag: "Vaccinated" },
-    { id: 5, name: "Oliver", type: "cat", breed: "Tabby Mix", age: "2 Years", gender: "Male", location: "Whitefield, Bengaluru", image: "🐱‍👤", tag: "Neutered" },
-    { id: 6, name: "Cleo", type: "kitten", breed: "Siamese Cross", age: "4 Months", gender: "Female", location: "Malleshwaram, Bengaluru", image: "🙀", tag: "Urgent" },
+    { id: 1, name: "Milo", type: "kitten", breed: "Indie Shorthair", age: "3 Months", gender: "Male", location: "Indiranagar, Bengaluru", image: "/assets/indie.jpg", tag: "Urgent" },
+    { id: 2, name: "Luna", type: "kitten", breed: "Indie Stray Mix", age: "5 Months", gender: "Female", location: "Koramangala, Bengaluru", image: "/assets/indie_mix.webp", tag: "Foster Home" },
+    { id: 3, name: "Cookie", type: "cat", breed: "Calico Mix", age: "1 Year", gender: "Female", location: "Jayanagar, Bengaluru", image: "/assets/calico_mix.jpg", tag: "Vaccinated" },
+    { id: 4, name: "Simba", type: "cat", breed: "Persian Mix", age: "8 Months", gender: "Male", location: "HSR Layout, Bengaluru", image: "/assets/persian_mix.jpg", tag: "Vaccinated" },
+    { id: 5, name: "Oliver", type: "cat", breed: "Tabby Mix", age: "2 Years", gender: "Male", location: "Whitefield, Bengaluru", image: "/assets/tabby_mix.webp", tag: "Neutered" },
+    { id: 6, name: "Cleo", type: "kitten", breed: "Siamese Cross", age: "4 Months", gender: "Female", location: "Malleshwaram, Bengaluru", image: "/assets/siamese_cross.jpg", tag: "Urgent" },
   ];
 
-  // Expanded cat supplies dataset featuring free items
+  // Marketplace Dataset with verbatim file references
   const catSupplies = [
-    { id: 1, name: "Premium Salmon Kitten Kibble (2kg)", category: "food", price: "₹899", image: "🍗", description: "High-protein formula perfect for growing kittens.", label: "Buy for my cat" },
-    { id: 2, name: "Sisal Rope Cat Scratcher Post", category: "toys", price: "₹650", image: "🐾", description: "Durable scratching post to protect your furniture.", label: "Buy for my cat" },
-    { id: 3, name: "Shelter Care Package (Litter + Food)", category: "donation", price: "₹1,200", image: "📦", description: "Directly shipped to rescue cats in need at our partner home.", label: "Donate this item" },
-    { id: 4, name: "Interactive Feather Wand Toy Trio", category: "toys", price: "₹249", image: "🪄", description: "Engaging stalk-and-pounce toy set for active indoor felines.", label: "Buy for my cat" },
-    { id: 5, name: "Pre-loved Cozy Feline Igloo Bed", category: "free", price: "FREE", image: "🎪", description: "Gently used plush bed washed clean, ready for a new home giveaway.", label: "Claim item" },
-    { id: 6, name: "Sample Pack: Organic Catnip Flakes", category: "free", price: "FREE", image: "🌿", description: "Complimentary single-use testing pack of premium homegrown catnip.", label: "Claim item" },
+    { id: 1, name: "Premium Salmon Kitten Kibble (2kg)", category: "food", price: "₹899", image: "/assets/salmon_kibble.jpg", description: "High-protein formula.", label: "Buy for my cat" },
+    { id: 2, name: "Sisal Rope Cat Scratcher Post", category: "toys", price: "₹650", image: "/assets/cat_scratcher_post.jpg", description: "Durable scratching post.", label: "Buy for my cat" },
+    { id: 3, name: "Shelter Care Package", category: "donation", price: "₹1,200", image: "/assets/care_cat.jpg", description: "Directly shipped to rescues.", label: "Donate this item" },
+    { id: 4, name: "Interactive Feather Wand Toy", category: "toys", price: "₹249", image: "/assets/feather_toy.jpg", description: "Engaging stalk-and-pounce toy.", label: "Buy for my cat" },
+    { id: 5, name: "Pre-loved Cozy Feline Igloo Bed", category: "free", price: "FREE", image: "/assets/igloo_bed.jpg", description: "Gently used plush bed.", label: "Claim item" },
+    { id: 6, name: "Organic Catnip Flakes", category: "free", price: "FREE", image: "/assets/catnip.jpg", description: "Premium homegrown catnip.", label: "Claim item" },
   ];
 
   const successStories = [
@@ -203,7 +204,9 @@ export default function AdoptionHomeTab({ theme, isDarkMode }) {
                     style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
                   >
                     <div className="h-32 flex items-center justify-center text-5xl relative select-none bg-slate-50/50 dark:bg-slate-900/50 overflow-hidden">
-                      <span className="transition-transform duration-300 group-hover:scale-110">{pet.image}</span>
+                      {/* Fixed: Replaced plain string span with img tag */}
+                      <img src={pet.image} alt={pet.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                      
                       <span title={`Status: ${pet.tag}`} className="absolute top-2 left-2 text-[9px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md shadow-3xs border bg-white text-slate-700 border-slate-200">
                         {pet.tag}
                       </span>
@@ -276,7 +279,9 @@ export default function AdoptionHomeTab({ theme, isDarkMode }) {
               >
                 {/* Image Display Box */}
                 <div className="h-28 flex items-center justify-center text-4xl bg-slate-100/50 dark:bg-slate-800/50 relative select-none">
-                  <span className="transition-transform group-hover:scale-110">{item.image}</span>
+                  {/* Fixed: Replaced plain string span with img tag */}
+                  <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                  
                   <span className={`absolute top-2 left-2 text-[8px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded-sm shadow-3xs ${
                     item.category === 'free' ? 'bg-amber-500 text-white' : item.category === 'donation' ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-700'
                   }`}>
