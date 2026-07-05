@@ -6,41 +6,52 @@ import MarketplaceTab from './MarketplaceTab';
 import GameScreen from './GameScreen';
 import NotificationsTab from './NotificationsTab';
 import SettingsTab from './SettingsTab';
-import AuthTab from './AuthTab';
 import { catThemes } from './themeStyles';
 import { 
-  Home, Gamepad2, ShoppingBag, User, Bell, Settings, Info, Search, PlusCircle 
+  Home, Gamepad2, ShoppingBag, User, Bell, Settings, Info, Search 
 } from 'lucide-react';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState('home');
   const [currentTheme, setCurrentTheme] = useState('orange');
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
   const theme = catThemes[currentTheme] || catThemes.orange;
 
-  // The active content controller mapping your clean layout modules
   const renderTabContent = () => {
     switch (currentTab) {
       case 'home':
-        return <HomeTab currentTheme={currentTheme} />;
+        return <HomeTab theme={theme} onNavigate={(tab) => setCurrentTab(tab)} />;
       case 'game':
-          return <GameScreen currentTheme={currentTheme} />;
+        return <GameScreen theme={theme} currentTheme={currentTheme} isDarkMode={isDarkMode} />;
       case 'adoption':
-        return <MarketplaceTab currentTheme={currentTheme} />;
+        return <MarketplaceTab theme={theme} currentTheme={currentTheme} isDarkMode={isDarkMode} />;
       case 'profile':
-        return <ProfileTab currentTheme={currentTheme} />;
+        return <ProfileTab theme={theme} isDarkMode={isDarkMode} />;
+      
+      {/* ✅ FIXED: Added explicit case handler for notifications tab view */}
       case 'notifications':
-          return <NotificationsTab currentTheme={currentTheme} />;
+        return <NotificationsTab theme={theme} currentTheme={currentTheme} />;
+        
       case 'settings':
-            return (
-              <SettingsTab 
-                currentTheme={currentTheme} 
-                onThemeChange={(newTheme) => setCurrentTheme(newTheme)} 
-              />
-            );
+        return (
+          <SettingsTab 
+            theme={theme}
+            currentTheme={currentTheme} 
+            onThemeChange={(newTheme) => setCurrentTheme(newTheme)} 
+            isDarkMode={isDarkMode}
+            onDarkModeToggle={setIsDarkMode} 
+          />
+        );
       case 'about':
-        return <div className="p-8 text-center font-bold bg-white rounded-2xl border">ℹ️ About Us Project Specs Coming Soon!</div>;
+        return (
+          <div className="p-8 text-center font-medium text-xs rounded-2xl border transition-colors"
+               style={{ backgroundColor: theme.cardBg, borderColor: theme.border, color: theme.textMuted }}>
+            ℹ️ About Us Project Specs Coming Soon!
+          </div>
+        );
       default:
-        return <HomeTab currentTheme={currentTheme} />;
+        return <HomeTab theme={theme} onNavigate={(tab) => setCurrentTab(tab)} />;
     }
   };
 
@@ -55,22 +66,19 @@ export default function App() {
   ];
 
   return (
-    <div className="flex min-h-screen font-sans antialiased transition-colors duration-300" 
+    <div className="flex min-h-screen font-sans antialiased transition-colors duration-300 tracking-tight" 
          style={{ backgroundColor: theme.background, color: theme.text }}>
       
-      {/* =========================================================================
-          LEFT SIDEBAR NAVIGATION MODULE
-          ========================================================================= */}
-      <aside className="w-64 bg-white border-r p-6 flex flex-col justify-between fixed h-full z-10"
-             style={{ borderColor: theme.border }}>
+      <aside className="w-64 border-r p-6 flex flex-col justify-between fixed h-full z-10 transition-colors duration-300"
+             style={{ backgroundColor: theme.sidebarBg, borderColor: theme.border }}>
         <div>
-          {/* Brand Identity Label */}
-          <div className="flex items-center gap-2 mb-8 px-2">
-            <span className="text-2xl">🐾</span>
-            <span className="text-xl font-black tracking-tight" style={{ color: theme.primary }}>PawSpace</span>
+          <div className="flex items-center gap-2 mb-8 px-2 select-none">
+            <span className="text-xl">🐾</span>
+            <span className="text-base font-semibold tracking-tight transition-colors" style={{ color: theme.text }}>
+              PawSpace
+            </span>
           </div>
 
-          {/* Core Navigation Triggers */}
           <nav className="space-y-1">
             {navigationItems.map((item) => {
               const IconComponent = item.icon;
@@ -79,80 +87,78 @@ export default function App() {
                 <button
                   key={item.id}
                   onClick={() => setCurrentTab(item.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl transition-all duration-200 group ${
-                    isActive ? 'shadow-sm font-extrabold' : 'opacity-60 hover:opacity-100'
+                  className={`w-full flex items-center gap-3 px-4 py-2.5 text-xs font-medium rounded-xl transition-all duration-150 group active:scale-98 ${
+                    isActive ? 'shadow-sm' : 'hover:opacity-100'
                   }`}
                   style={{
                     backgroundColor: isActive ? theme.cardBg : 'transparent',
-                    color: isActive ? theme.primary : theme.text
+                    color: isActive ? theme.primary : theme.textMuted
                   }}
                 >
-                  <IconComponent className="w-5 h-5 transition-transform group-hover:scale-105" />
-                  {item.label}
+                  <IconComponent className="w-4 h-4 transition-transform group-hover:scale-102" 
+                                 style={{ color: isActive ? theme.primary : 'inherit' }} />
+                  <span style={{ color: isActive ? theme.text : 'inherit' }}>{item.label}</span>
                 </button>
               );
             })}
           </nav>
         </div>
-
-        {/* Global Floating Actions Addon Trigger */}
-        <div className="pt-4 border-t" style={{ borderColor: theme.border }}>
-          <button className="w-full py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-transform hover:scale-[1.02]"
-                  style={{ backgroundColor: theme.primary, color: theme.background }}>
-            <PlusCircle className="w-4 h-4" />
-            Add Post
-          </button>
-        </div>
       </aside>
 
-      {/* =========================================================================
-          MAIN APPLICATION RUNTIME LAYOUT SHELL
-          ========================================================================= */}
       <div className="flex-1 pl-64 flex flex-col min-h-screen">
-        
-        {/* Top Header Search Deck utility section */}
-        <header className="h-16 border-b bg-white/50 backdrop-blur-md px-8 flex items-center justify-between sticky top-0 z-20"
-                style={{ borderColor: theme.border }}>
-          <div className="relative w-96">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 opacity-40" />
+        <header className="h-16 border-b backdrop-blur-md px-8 flex items-center justify-between sticky top-0 z-20 transition-colors duration-300"
+                style={{ backgroundColor: theme.headerBg, borderColor: theme.border }}>
+          <div className="relative w-80">
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none transition-colors" 
+                    style={{ color: theme.textMuted }} />
             <input 
               type="text" 
               placeholder="Search cats, people, posts..." 
-              className="w-full pl-10 pr-4 py-2 text-xs font-medium rounded-full bg-white border outline-none focus:ring-2 transition-all"
-              style={{ borderColor: theme.border }}
+              className="w-full pl-9 pr-4 py-1.5 text-xs font-normal rounded-xl border outline-none transition-all"
+              style={{ 
+                backgroundColor: theme.cardBg, 
+                borderColor: theme.border, 
+                color: theme.text 
+              }}
             />
           </div>
           
-          {/* Quick Realtime Active Theme Configuration Toggles */}
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5 bg-white p-1 rounded-full border shadow-sm" style={{ borderColor: theme.border }}>
+            <div className="flex items-center gap-1.5 p-1 rounded-full border shadow-sm transition-colors" 
+                 style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}>
               {Object.keys(catThemes).map((themeKey) => (
                 <button
                   key={themeKey}
                   onClick={() => setCurrentTheme(themeKey)}
-                  className="w-6 h-6 rounded-full border text-[9px] font-black flex items-center justify-center transition-all hover:scale-110"
+                  className={`w-5 h-5 rounded-full border text-[8px] font-semibold flex items-center justify-center transition-all hover:scale-110 active:scale-90 ${
+                    currentTheme === themeKey ? 'ring-2 ring-offset-1' : ''
+                  }`}
                   style={{ 
                     backgroundColor: catThemes[themeKey].primary, 
-                    borderColor: currentTheme === themeKey ? theme.text : 'transparent',
-                    color: catThemes[themeKey].background
+                    borderColor: 'transparent',
+                    color: '#ffffff',
+                    '--tw-ring-color': theme.primary
                   }}
-                  title={`Switch to ${themeKey}`}
+                  title={`Switch to ${catThemes[themeKey].name}`}
                 >
                   {themeKey[0].toUpperCase()}
                 </button>
               ))}
             </div>
-            <div className="w-8 h-8 rounded-full bg-slate-200 border-2 flex items-center justify-center overflow-hidden shadow-sm" style={{ borderColor: theme.primary }}>
-              <span className="text-xs">🐱</span>
+            
+            <div 
+              className="w-8 h-8 rounded-full border flex items-center justify-center cursor-pointer transition-all shadow-sm active:scale-95 select-none"
+              style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
+              title="View your Profile"
+              onClick={() => setCurrentTab('profile')}
+            >
+              <span className="text-sm">🐱</span>
             </div>
           </div>
         </header>
 
-        {/* Target viewport injection viewport segment box */}
         <main className="p-8 flex-1">
-          <div>
-            {renderTabContent()}
-          </div>
+          {renderTabContent()}
         </main>
       </div>
     </div>

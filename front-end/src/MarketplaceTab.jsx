@@ -1,244 +1,349 @@
-// src/MarketplaceTab.jsx
+// src/AdoptionHomeTab.jsx
 import React, { useState } from 'react';
-import { catThemes } from './themeStyles';
 import { 
-  Heart, Gift, PlusCircle, Filter, ArrowRight, MapPin, 
-  ChevronDown, ShieldCheck, Users, RefreshCw, HeartHandshake
+  Search, Heart, MapPin, ArrowRight, Sparkles, PlusCircle, Gift, ShoppingBag
 } from 'lucide-react';
 
-export default function MarketplaceTab({ currentTheme = 'orange' }) {
-  const theme = catThemes[currentTheme];
+export default function AdoptionHomeTab({ theme, isDarkMode }) {
+  const [activeSubTab, setActiveSubTab] = useState('browse'); // 'browse' or 'supplies'
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState('all');
+  const [favorites, setFavorites] = useState([]);
 
-  // Mock Adoptable Cats Data matching left side of file_000000007618720b823ba77bccd8e6b2.png
-  const adoptableCats = [
-    { id: 1, name: "Milo", gender: "♂", age: "2 months", loc: "Mumbai, MH", bio: "Playful and curious little boy loves to cuddle!", icon: "🐱" },
-    { id: 2, name: "Luna", gender: "♀", age: "4 months", loc: "Delhi, DL", bio: "Sweet and gentle princess looking for love 👑", icon: "🐈" },
-    { id: 3, name: "Oreo", gender: "♂", age: "1 year", loc: "Bangalore, KA", bio: "Calm and friendly boy. Great with other cats!", icon: "🐼" }
+  // Expanded feline-exclusive dataset
+  const adoptionPets = [
+    { id: 1, name: "Milo", type: "kitten", breed: "Indie Shorthair", age: "3 Months", gender: "Male", location: "Indiranagar, Bengaluru", image: "🐈", tag: "Urgent" },
+    { id: 2, name: "Luna", type: "kitten", breed: "Indie Stray Mix", age: "5 Months", gender: "Female", location: "Koramangala, Bengaluru", image: "🐱", tag: "Foster Home" },
+    { id: 3, name: "Cookie", type: "cat", breed: "Calico Mix", age: "1 Year", gender: "Female", location: "Jayanagar, Bengaluru", image: "🐈‍⬛", tag: "Vaccinated" },
+    { id: 4, name: "Simba", type: "cat", breed: "Persian Mix", age: "8 Months", gender: "Male", location: "HSR Layout, Bengaluru", image: "🦁", tag: "Vaccinated" },
+    { id: 5, name: "Oliver", type: "cat", breed: "Tabby Mix", age: "2 Years", gender: "Male", location: "Whitefield, Bengaluru", image: "🐱‍👤", tag: "Neutered" },
+    { id: 6, name: "Cleo", type: "kitten", breed: "Siamese Cross", age: "4 Months", gender: "Female", location: "Malleshwaram, Bengaluru", image: "🙀", tag: "Urgent" },
   ];
 
-  // Quick Mini List Rows beneath the main grid
-  const miniCatRow = [
-    { name: "Coco", gender: "♀", loc: "Pune, MH" },
-    { name: "Simba", gender: "♂", loc: "Chennai, TN" },
-    { name: "Ginger", gender: "♂", loc: "Kolkata, WB" },
-    { name: "Misty", gender: "♀", loc: "Hyderabad, TS" }
+  // Expanded cat supplies dataset featuring free items
+  const catSupplies = [
+    { id: 1, name: "Premium Salmon Kitten Kibble (2kg)", category: "food", price: "₹899", image: "🍗", description: "High-protein formula perfect for growing kittens.", label: "Buy for my cat" },
+    { id: 2, name: "Sisal Rope Cat Scratcher Post", category: "toys", price: "₹650", image: "🐾", description: "Durable scratching post to protect your furniture.", label: "Buy for my cat" },
+    { id: 3, name: "Shelter Care Package (Litter + Food)", category: "donation", price: "₹1,200", image: "📦", description: "Directly shipped to rescue cats in need at our partner home.", label: "Donate this item" },
+    { id: 4, name: "Interactive Feather Wand Toy Trio", category: "toys", price: "₹249", image: "🪄", description: "Engaging stalk-and-pounce toy set for active indoor felines.", label: "Buy for my cat" },
+    { id: 5, name: "Pre-loved Cozy Feline Igloo Bed", category: "free", price: "FREE", image: "🎪", description: "Gently used plush bed washed clean, ready for a new home giveaway.", label: "Claim item" },
+    { id: 6, name: "Sample Pack: Organic Catnip Flakes", category: "free", price: "FREE", image: "🌿", description: "Complimentary single-use testing pack of premium homegrown catnip.", label: "Claim item" },
   ];
 
-  // Mock Giveaways & Marketplace items matching right side of file_000000007618720b823ba77bccd8e6b2.png
-  const marketplaceItems = [
-    { id: 1, title: "Cat Tree – Gently Used", desc: "Well maintained cat tree. Perfect for active kitties!", price: "FREE", loc: "Bangalore, KA", poster: "Rhea P.", time: "2 hrs ago" },
-    { id: 2, title: "Cat Toys Bundle", desc: "Assorted toys. My cats have outgrown these.", price: "FREE", loc: "Mumbai, MH", poster: "Arjun S.", time: "5 hrs ago" },
-    { id: 3, title: "Royal Canin Kitten Food", desc: "2kg pack. Opened but barely used.", price: "₹400", loc: "Pune, MH", poster: "Neha T.", time: "1 day ago" },
-    { id: 4, title: "Feeding Bowls", desc: "Stainless steel bowls with stand.", price: "FREE", loc: "Delhi, DL", poster: "Kavya I.", time: "1 day ago" },
-    { id: 5, title: "Pet Carrier", desc: "Sturdy carrier. Used only twice.", price: "₹600", loc: "Chennai, TN", poster: "Vikram M.", time: "2 days ago" },
-    { id: 6, title: "Cardboard Cat House", desc: "My cat loved this! Hope yours will too 💜", price: "FREE", loc: "Kolkata, WB", poster: "Tania R.", time: "3 days ago" }
+  const successStories = [
+    { id: 1, pet: "Bella (Now Daisy)", owner: "Ananya R.", text: "Adopting Daisy was the best decision of 2025. She transformed from a terrified rescue into the sweetest lap cat!", emoji: "💖" },
+    { id: 2, pet: "Chico", owner: "Rahul M.", text: "The team made the process completely clear and supportive. Chico has integrated beautifully with my parents.", emoji: "🏠" }
   ];
+
+  const toggleFavorite = (id) => {
+    if (favorites.includes(id)) {
+      setFavorites(favorites.filter(favId => favId !== id));
+    } else {
+      setFavorites([...favorites, id]);
+    }
+  };
+
+  const handleActionAlert = (actionType) => {
+    alert(`Portal Action: Launching setup configuration for "${actionType}".`);
+  };
+
+  const filteredPets = adoptionPets.filter(pet => {
+    const matchesSearch = pet.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          pet.breed.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          pet.location.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesTab = selectedFilter === 'all' || pet.type === selectedFilter;
+    return matchesSearch && matchesTab;
+  });
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-6 transition-colors duration-300 font-sans">
       
       {/* =========================================================================
-          HERO BANNER MODULE (Matches file_000000007618720b823ba77bccd8e6b2.png)
+          HERO BANNER PROMPT
           ========================================================================= */}
-      <div className="rounded-3xl overflow-hidden border p-8 relative flex flex-col md:flex-row justify-between items-center gap-6 bg-white shadow-sm"
-           style={{ borderColor: theme.border }}>
-        <div className="space-y-4 max-w-xl z-10">
-          <h1 className="text-3xl font-black tracking-tight">Adopt. Donate. Give Love. 💜</h1>
-          <p className="text-sm font-medium opacity-70 leading-relaxed">
-            Help cats and cat lovers by adopting, donating, or giving away items they need.
+      <div className="rounded-2xl border p-6 shadow-sm relative overflow-hidden transition-all flex flex-col md:flex-row items-center justify-between gap-4"
+           style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}>
+        <div className="space-y-2 text-center md:text-left max-w-lg">
+          <span title="Find your forever friend" className="text-[10px] uppercase font-semibold tracking-wider px-2.5 py-0.5 rounded-full flex items-center gap-1 w-fit mx-auto md:mx-0 cursor-help"
+                style={{ backgroundColor: `${theme.primary}15`, color: theme.primary }}>
+            <Sparkles className="w-3 h-3" /> Find Your Forever Friend
+          </span>
+          <h2 className="text-lg font-semibold tracking-tight" style={{ color: theme.text }}>
+            Give a Second Chance to a Loving Soul
+          </h2>
+          <p className="text-xs leading-normal opacity-90" style={{ color: theme.textMuted }}>
+            All companions listed here are verified through screening, medical profiles, and are actively waiting to join a safe home network.
           </p>
-          
-          {/* Quick Hub Filter Cards */}
-          <div className="flex flex-wrap gap-3 pt-2">
-            <button className="flex items-center gap-2 px-4 py-2.5 bg-slate-50 border rounded-xl text-xs font-bold shadow-sm hover:scale-[1.02] transition-transform" style={{ borderColor: theme.border }}>
-              <Heart className="w-4 h-4 text-purple-500" />
-              <div><p className="text-left font-black">Adopt a Cat</p><p className="text-[10px] opacity-50 font-normal">Give a cat a forever home</p></div>
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2.5 bg-slate-50 border rounded-xl text-xs font-bold shadow-sm hover:scale-[1.02] transition-transform" style={{ borderColor: theme.border }}>
-              <Gift className="w-4 h-4 text-blue-500" />
-              <div><p className="text-left font-black">Giveaways & Donations</p><p className="text-[10px] opacity-50 font-normal">Toys, food, accessories & more</p></div>
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2.5 bg-slate-50 border rounded-xl text-xs font-bold shadow-sm hover:scale-[1.02] transition-transform" style={{ borderColor: theme.border }}>
-              <PlusCircle className="w-4 h-4 text-emerald-500" />
-              <div><p className="text-left font-black">Post Ad</p><p className="text-[10px] opacity-50 font-normal">Post for adoption or giveaways</p></div>
-            </button>
-          </div>
         </div>
-
-        {/* Big Graphic Side Placeholder */}
-        <div className="w-64 h-36 border border-dashed rounded-2xl flex items-center justify-center font-bold text-xs text-slate-400 bg-slate-50 select-none" style={{ borderColor: theme.border }}>
-          🐾 [Banner Cat Image Feature Area] 🐾
-        </div>
+        <div title="Cat shelter home" className="text-6xl select-none animate-pulse hidden md:block cursor-default">🏡</div>
       </div>
 
       {/* =========================================================================
-          MAIN DUAL COLUMN CORE CONTENT MARKET GRID
+          ACTION HUB ROUTER PILLS
           ========================================================================= */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
-        
-        {/* -----------------------------------------------------------------------
-            LEFT SIDE COLUMN: Cat Adoptions (5 / 12 Grid)
-            ----------------------------------------------------------------------- */}
-        <div className="xl:col-span-5 space-y-4">
-          <div className="flex justify-between items-center border-b pb-2" style={{ borderColor: theme.border }}>
-            <div className="flex items-center gap-2">
-              <span className="text-xl">🐾</span>
-              <div>
-                <h2 className="text-base font-black tracking-tight">Adoption</h2>
-                <p className="text-[11px] font-bold opacity-50">Find your new best friend</p>
-              </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <button 
+          onClick={() => { setActiveSubTab('browse'); handleActionAlert('Adoption Matching Registry'); }}
+          title="Adopt a cat"
+          className="flex items-center gap-3 p-3 text-left rounded-xl border bg-white dark:bg-slate-900 shadow-xs hover:shadow-md hover:border-slate-400 dark:hover:border-slate-600 hover:scale-[1.01] active:scale-99 transition-all group"
+          style={{ borderColor: theme.border }}
+        >
+          <div className="p-2 rounded-lg transition-transform group-hover:scale-110" style={{ backgroundColor: `${theme.primary}15`, color: theme.primary }}><Heart className="w-4 h-4 fill-current" /></div>
+          <div>
+            <p className="text-xs font-semibold tracking-tight" style={{ color: theme.text }}>Adopt a Cat</p>
+            <p className="text-[10px]" style={{ color: theme.textMuted }}>Browse direct feline rescues</p>
+          </div>
+        </button>
+
+        <button 
+          onClick={() => { setActiveSubTab('supplies'); handleActionAlert('Marketplace Donation Block'); }}
+          title="Make a donation"
+          className="flex items-center gap-3 p-3 text-left rounded-xl border bg-white dark:bg-slate-900 shadow-xs hover:shadow-md hover:border-emerald-400 dark:hover:border-emerald-600 hover:scale-[1.01] active:scale-99 transition-all group"
+          style={{ borderColor: theme.border }}
+        >
+          <div className="p-2 rounded-lg text-emerald-500 bg-emerald-500/15 transition-transform group-hover:scale-110"><Gift className="w-4 h-4" /></div>
+          <div>
+            <p className="text-xs font-semibold tracking-tight" style={{ color: theme.text }}>Make a Donation</p>
+            <p className="text-[10px]" style={{ color: theme.textMuted }}>Sponsor physical items & food</p>
+          </div>
+        </button>
+
+        <button 
+          onClick={() => handleActionAlert('Post Re-homing Advertisement')}
+          title="Post an ad"
+          className="flex items-center gap-3 p-3 text-left rounded-xl border bg-white dark:bg-slate-900 shadow-xs hover:shadow-md hover:border-blue-400 dark:hover:border-blue-600 hover:scale-[1.01] active:scale-99 transition-all group"
+          style={{ borderColor: theme.border }}
+        >
+          <div className="p-2 rounded-lg text-blue-500 bg-blue-500/15 transition-transform group-hover:scale-110"><PlusCircle className="w-4 h-4" /></div>
+          <div>
+            <p className="text-xs font-semibold tracking-tight" style={{ color: theme.text }}>Post an Ad</p>
+            <p className="text-[10px]" style={{ color: theme.textMuted }}>List for adoption or giveaway</p>
+          </div>
+        </button>
+      </div>
+
+      {/* =========================================================================
+          INTERNAL TAB NAVIGATION (Browse Cats vs Cat Supplies)
+          ========================================================================= */}
+      <div className="flex border-b border-slate-200 dark:border-slate-700 text-xs font-medium">
+        <button 
+          onClick={() => setActiveSubTab('browse')}
+          title="Browse cats"
+          className={`px-4 py-2 border-b-2 -mb-px transition-all ${activeSubTab === 'browse' ? 'border-purple-600 text-purple-600 font-semibold' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
+          style={{ color: activeSubTab === 'browse' ? theme.primary : undefined, borderBottomColor: activeSubTab === 'browse' ? theme.primary : 'transparent' }}
+        >
+          🐾 Browse Rescue Cats ({adoptionPets.length})
+        </button>
+        <button 
+          onClick={() => setActiveSubTab('supplies')}
+          title="View donations"
+          className={`px-4 py-2 border-b-2 -mb-px transition-all ${activeSubTab === 'supplies' ? 'border-purple-600 text-purple-600 font-semibold' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
+          style={{ color: activeSubTab === 'supplies' ? theme.primary : undefined, borderBottomColor: activeSubTab === 'supplies' ? theme.primary : 'transparent' }}
+        >
+          🛍️ Cat Supplies & Marketplace Goods
+        </button>
+      </div>
+
+      {/* =========================================================================
+          SUB-TAB PANEL RENDERING
+          ========================================================================= */}
+      {activeSubTab === 'browse' ? (
+        <>
+          {/* CONTROLS BAR (SEARCH & CATEGORY FILTERS) */}
+          <div className="space-y-3">
+            <div title="Type to search" className="relative rounded-xl shadow-xs flex items-center border overflow-hidden hover:border-slate-400 dark:hover:border-slate-600 transition-colors"
+                 style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}>
+              <Search className="w-4 h-4 ml-3 shrink-0" style={{ color: theme.textMuted }} />
+              <input 
+                type="text"
+                placeholder="Search for cats by name, breed, or location..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full p-2.5 pl-2 text-xs outline-none bg-transparent"
+                style={{ color: theme.text }}
+              />
             </div>
-            <button className="text-xs font-bold flex items-center gap-1 transition-colors" style={{ color: theme.primary }}>
-              View All <ArrowRight className="w-3 h-3" />
-            </button>
-          </div>
 
-          {/* Inline Filter Selectors */}
-          <div className="flex flex-wrap gap-2 text-xs font-bold">
-            <span className="px-3 py-1.5 rounded-full text-white" style={{ backgroundColor: theme.primary }}>All Cats</span>
-            <span className="px-3 py-1.5 rounded-full bg-white border flex items-center gap-1 opacity-70" style={{ borderColor: theme.border }}>Age <ChevronDown className="w-3 h-3" /></span>
-            <span className="px-3 py-1.5 rounded-full bg-white border flex items-center gap-1 opacity-70" style={{ borderColor: theme.border }}>Location <ChevronDown className="w-3 h-3" /></span>
-            <span className="px-3 py-1.5 rounded-full bg-white border flex items-center gap-1 opacity-70" style={{ borderColor: theme.border }}>Gender <ChevronDown className="w-3 h-3" /></span>
-            <span className="ml-auto p-1.5 rounded-xl bg-white border opacity-60" style={{ borderColor: theme.border }}><Filter className="w-3.5 h-3.5" /></span>
-          </div>
-
-          {/* Main Triple Stack Adoption Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-1 gap-4">
-            {adoptableCats.map((cat) => (
-              <div key={cat.id} className="bg-white border rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between" style={{ borderColor: theme.border }}>
-                <div className="h-32 bg-slate-50 flex items-center justify-center text-4xl border-b select-none relative" style={{ borderColor: theme.border }}>
-                  {cat.icon}
-                  <span className="absolute bottom-2 left-2 text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-black/40 text-white backdrop-blur-sm uppercase tracking-wider">{cat.age}</span>
-                </div>
-                <div className="p-4 space-y-2">
-                  <div className="flex justify-between items-center">
-                    <h3 className="font-black text-sm flex items-center gap-1">
-                      {cat.name} <span className={cat.gender === '♂' ? "text-blue-500" : "text-pink-500"}>{cat.gender}</span>
-                    </h3>
-                    <span className="text-[10px] font-bold opacity-60 flex items-center gap-0.5"><MapPin className="w-3 h-3" /> {cat.loc}</span>
-                  </div>
-                  <p className="text-xs font-medium opacity-70 line-clamp-2 leading-relaxed">{cat.bio}</p>
-                  
-                  <div className="flex gap-2 pt-2">
-                    <button className="flex-1 py-1.5 rounded-xl text-xs font-bold text-center border shadow-sm transition-transform hover:scale-[1.02]"
-                            style={{ backgroundColor: theme.cardBg, borderColor: theme.border, color: theme.primary }}>
-                      View Details
-                    </button>
-                    <button className="p-1.5 rounded-xl border opacity-60 hover:opacity-100" style={{ borderColor: theme.border }}><Heart className="w-4 h-4" /></button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Quick Miniature Bottom Row mapping */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-2 gap-2 pt-1">
-            {miniCatRow.map((mCat, idx) => (
-              <div key={idx} className="bg-white border p-2.5 rounded-xl flex items-center gap-2.5 shadow-sm" style={{ borderColor: theme.border }}>
-                <span className="text-xl bg-slate-50 p-1 rounded-md border">🐱</span>
-                <div className="overflow-hidden">
-                  <p className="text-xs font-black truncate flex items-center gap-0.5">{mCat.name} <span className="text-[10px] opacity-40">{mCat.gender}</span></p>
-                  <p className="text-[9px] font-bold opacity-40 truncate">{mCat.loc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* View All Adoptable Button Block */}
-          <button className="w-full py-2.5 border rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 bg-white shadow-sm hover:scale-[1.01] transition-transform" style={{ borderColor: theme.border }}>
-            View All Adoptable Cats <ArrowRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-
-        {/* -----------------------------------------------------------------------
-            RIGHT SIDE COLUMN: Giveaways & Donations Marketplace (7 / 12 Grid)
-            ----------------------------------------------------------------------- */}
-        <div className="xl:col-span-7 space-y-4">
-          <div className="flex justify-between items-center border-b pb-2" style={{ borderColor: theme.border }}>
-            <div className="flex items-center gap-2">
-              <span className="text-xl">🎁</span>
-              <div>
-                <h2 className="text-base font-black tracking-tight">Giveaways & Donations</h2>
-                <p className="text-[11px] font-bold opacity-50">Give items or share what you no longer need</p>
-              </div>
+            <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar text-xs">
+              {[
+                { id: 'all', label: 'All Felines' },
+                { id: 'kitten', label: '🐱 Junior Kittens' },
+                { id: 'cat', label: '🐈 Mature Cats' }
+              ].map((tab) => {
+                const isActive = selectedFilter === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setSelectedFilter(tab.id)}
+                    title={`Filter: ${tab.label}`}
+                    className="px-4 py-1.5 rounded-xl border font-medium whitespace-nowrap hover:scale-101 active:scale-99 transition-all shadow-3xs"
+                    style={{
+                      backgroundColor: isActive ? theme.primary : theme.cardBg,
+                      borderColor: isActive ? theme.primary : theme.border,
+                      color: isActive ? '#ffffff' : theme.text
+                    }}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
             </div>
-            <button className="text-xs font-bold flex items-center gap-1 transition-colors" style={{ color: theme.primary }}>
-              View All <ArrowRight className="w-3 h-3" />
-            </button>
           </div>
 
-          {/* Filter Chips Bar */}
-          <div className="flex flex-wrap gap-2 text-xs font-bold">
-            <span className="px-3 py-1.5 rounded-full text-white" style={{ backgroundColor: theme.primary }}>All Items</span>
-            <span className="px-3 py-1.5 rounded-full bg-white border opacity-70" style={{ borderColor: theme.border }}>Free</span>
-            <span className="px-3 py-1.5 rounded-full bg-white border opacity-70" style={{ borderColor: theme.border }}>For Sale</span>
-            <span className="px-3 py-1.5 rounded-full bg-white border opacity-70" style={{ borderColor: theme.border }}>Toys</span>
-            <span className="px-3 py-1.5 rounded-full bg-white border opacity-70" style={{ borderColor: theme.border }}>Food</span>
-            <span className="px-3 py-1.5 rounded-full bg-white border opacity-70" style={{ borderColor: theme.border }}>Accessories</span>
-            <span className="px-3 py-1.5 rounded-full bg-white border opacity-70" style={{ borderColor: theme.border }}>Other</span>
-            <span className="ml-auto p-1.5 rounded-xl bg-white border opacity-60" style={{ borderColor: theme.border }}><Filter className="w-3.5 h-3.5" /></span>
+          {/* EXPANDED PETS GRID MODULE */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {filteredPets.length > 0 ? (
+              filteredPets.map((pet) => {
+                const isFav = favorites.includes(pet.id);
+                return (
+                  <div 
+                    key={pet.id}
+                    title={`${pet.name}'s profile card`}
+                    className="rounded-2xl border shadow-sm flex flex-col justify-between overflow-hidden group hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-300"
+                    style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
+                  >
+                    <div className="h-32 flex items-center justify-center text-5xl relative select-none bg-slate-50/50 dark:bg-slate-900/50 overflow-hidden">
+                      <span className="transition-transform duration-300 group-hover:scale-110">{pet.image}</span>
+                      <span title={`Status: ${pet.tag}`} className="absolute top-2 left-2 text-[9px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md shadow-3xs border bg-white text-slate-700 border-slate-200">
+                        {pet.tag}
+                      </span>
+                      <button 
+                        onClick={() => toggleFavorite(pet.id)}
+                        title="Like"
+                        className="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 backdrop-blur-xs border transition-all active:scale-90 hover:bg-white hover:scale-105 shadow-2xs"
+                        style={{ borderColor: theme.border }}
+                      >
+                        <Heart className={`w-3.5 h-3.5 transition-colors ${isFav ? 'fill-rose-500 text-rose-500 scale-110' : 'text-slate-400 hover:text-rose-400'}`} />
+                      </button>
+                    </div>
+
+                    <div className="p-4 space-y-2 flex-1 flex flex-col justify-between text-xs">
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-semibold tracking-tight text-sm" style={{ color: theme.text }}>{pet.name}</h4>
+                          <span title={`Age: ${pet.age}`} className="text-[10px] font-medium px-1.5 py-0.5 rounded-md" 
+                                style={{ backgroundColor: `${theme.primary}10`, color: theme.primary }}>
+                            {pet.age}
+                          </span>
+                        </div>
+                        <p title="Breed and gender" className="text-[11px] font-medium opacity-80" style={{ color: theme.textMuted }}>{pet.breed} • {pet.gender}</p>
+                        <p title="Location" className="text-[11px] flex items-center gap-1 opacity-70 pt-1 truncate" style={{ color: theme.textMuted }}>
+                          <MapPin className="w-3 h-3 text-rose-400 shrink-0" /> {pet.location}
+                        </p>
+                      </div>
+
+                      <button 
+                        onClick={() => handleActionAlert(`${pet.name}'s Profile Setup`)}
+                        title="View profile"
+                        className="w-full mt-2 py-1.5 rounded-xl border font-medium text-[11px] transition-all flex items-center justify-center gap-1 bg-transparent hover:bg-slate-50 dark:hover:bg-slate-800"
+                        style={{ borderColor: theme.border, color: theme.text }}>
+                        View Profile <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div title="No cats found" className="col-span-full text-center py-12 border border-dashed rounded-2xl text-xs max-w-md mx-auto w-full" 
+                   style={{ borderColor: theme.border, color: theme.textMuted }}>
+                No feline match located. Try shifting or modifying your active search parameters.
+              </div>
+            )}
+          </div>
+        </>
+      ) : (
+        /* =========================================================================
+            CAT SUPPLIES MARKETPLACE GRID (Featuring Giveaways)
+           ========================================================================= */
+        <div className="space-y-4 animate-fadeIn">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border border-dashed p-4 rounded-xl"
+               style={{ backgroundColor: `${theme.primary}05`, borderColor: theme.border }}>
+            <div className="text-xs">
+              <h4 className="font-semibold text-sm flex items-center gap-1" style={{ color: theme.text }}>
+                <ShoppingBag className="w-4 h-4 text-purple-500" /> Feline Marketplace Hub
+              </h4>
+              <p style={{ color: theme.textMuted }}>Explore commercial gear, sponsor care packs, or secure useful pre-loved community gear listed as free!</p>
+            </div>
           </div>
 
-          {/* Main 2-Column Marketplace Item Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {marketplaceItems.map((item) => (
-              <div key={item.id} className="bg-white border rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between" style={{ borderColor: theme.border }}>
-                <div className="h-28 bg-slate-50 flex items-center justify-center text-2xl border-b select-none relative font-bold text-slate-400" style={{ borderColor: theme.border }}>
-                  📦
-                  <span className={`absolute top-2 right-2 text-[10px] font-black px-2 py-0.5 rounded-md shadow-sm border ${
-                    item.price === 'FREE' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-purple-50 text-purple-600 border-purple-200'
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {catSupplies.map((item) => (
+              <div 
+                key={item.id}
+                title={`${item.name} marketplace listing`}
+                className="rounded-xl border shadow-xs flex flex-col justify-between overflow-hidden group hover:shadow-md transition-all duration-200"
+                style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
+              >
+                {/* Image Display Box */}
+                <div className="h-28 flex items-center justify-center text-4xl bg-slate-100/50 dark:bg-slate-800/50 relative select-none">
+                  <span className="transition-transform group-hover:scale-110">{item.image}</span>
+                  <span className={`absolute top-2 left-2 text-[8px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded-sm shadow-3xs ${
+                    item.category === 'free' ? 'bg-amber-500 text-white' : item.category === 'donation' ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-700'
                   }`}>
-                    {item.price}
+                    {item.category}
                   </span>
                 </div>
-                
-                <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
-                  <div>
-                    <h3 className="font-black text-sm tracking-tight line-clamp-1">{item.title}</h3>
-                    <p className="text-xs font-medium opacity-60 line-clamp-2 leading-relaxed pt-0.5">{item.desc}</p>
-                    <p className="text-[10px] font-bold opacity-40 flex items-center gap-0.5 pt-1.5"><MapPin className="w-3 h-3" /> {item.loc}</p>
+
+                {/* Content Details */}
+                <div className="p-4 flex-1 flex flex-col justify-between space-y-2 text-xs">
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <h5 className="font-semibold tracking-tight truncate max-w-[150px]" style={{ color: theme.text }}>{item.name}</h5>
+                      <span className={`font-bold ${item.category === 'free' ? 'text-amber-500 animate-pulse' : 'text-purple-600 dark:text-purple-400'}`}>{item.price}</span>
+                    </div>
+                    <p className="text-[11px] leading-normal opacity-80 line-clamp-2" style={{ color: theme.textMuted }}>{item.description}</p>
                   </div>
 
-                  <div className="flex justify-between items-center pt-3 border-t mt-2 text-[10px] font-bold opacity-60" style={{ borderColor: theme.border }}>
-                    <p>{item.poster} • <span className="font-normal opacity-70">{item.time}</span></p>
-                    <button className="opacity-50 hover:opacity-100"><Heart className="w-3.5 h-3.5" /></button>
-                  </div>
+                  {/* Dynamic Action Button Contexts */}
+                  <button 
+                    onClick={() => handleActionAlert(`Checkout/Claim Process: ${item.name}`)}
+                    title={item.category === 'free' ? 'Claim item' : item.category === 'donation' ? 'Make a donation' : 'Buy for my cat'}
+                    className={`w-full py-1.5 rounded-lg border font-medium text-[11px] transition-all text-center ${
+                      item.category === 'free' ? 'bg-amber-500 text-white border-amber-500 hover:bg-amber-600' :
+                      item.category === 'donation' ? 'bg-emerald-500 text-white border-emerald-500 hover:bg-emerald-600' : 
+                      'bg-transparent hover:bg-slate-50 dark:hover:bg-slate-800'
+                    }`}
+                    style={{ borderColor: (item.category === 'donation' || item.category === 'free') ? undefined : theme.border, color: (item.category === 'donation' || item.category === 'free') ? undefined : theme.text }}
+                  >
+                    {item.label}
+                  </button>
                 </div>
               </div>
             ))}
           </div>
+        </div>
+      )}
 
-          {/* Bottom Row View All Items Trigger */}
-          <button className="w-full py-2.5 border rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 bg-white shadow-sm hover:scale-[1.01] transition-transform" style={{ borderColor: theme.border }}>
-            View All Items <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+      {/* COMMUNITY SUCCESS STORIES */}
+      <div className="rounded-2xl border p-5 shadow-sm space-y-4" 
+           style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}>
+        <div>
+          <h3 title="Community success chronicles" className="text-xs font-semibold uppercase tracking-wider mb-1 flex items-center gap-1.5" style={{ color: theme.textMuted }}>
+            🎉 Community Success Chronicles
+          </h3>
+          <p className="text-[11px]" style={{ color: theme.textMuted }}>Real shelter transformations shared straight from our extended family network.</p>
         </div>
 
-      </div>
-
-      {/* =========================================================================
-          BOTTOM VALUE PROP INFO BANNERS BLOCK
-          ========================================================================= */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t" style={{ borderColor: theme.border }}>
-        {[
-          { icon: ShieldCheck, title: "Safe & Trusted", desc: "All ads are reviewed to ensure safety and authenticity." },
-          { icon: Users, title: "Community First", desc: "Connecting cat lovers to create a better world for cats." },
-          { icon: RefreshCw, title: "Reuse & Reduce", desc: "Give items a second life and help a cat in need." },
-          { icon: HeartHandshake, title: "Every Act Counts", desc: "Big or small, every act of kindness makes a difference." }
-        ].map((prop, idx) => {
-          const Icon = prop.icon;
-          return (
-            <div key={idx} className="flex gap-2.5 p-2 items-start">
-              <span className="p-2 bg-white rounded-xl border shadow-sm" style={{ borderColor: theme.border, color: theme.primary }}>
-                <Icon className="w-4 h-4" />
-              </span>
-              <div>
-                <h4 className="text-xs font-black tracking-tight leading-tight mb-0.5">{prop.title}</h4>
-                <p className="text-[10px] font-medium opacity-50 leading-normal">{prop.desc}</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          {successStories.map(story => (
+            <blockquote 
+              key={story.id} 
+              title="Success testimonial"
+              className="p-4 border rounded-xl relative italic flex flex-col justify-between gap-3 bg-slate-50/20 hover:bg-slate-50/60 dark:hover:bg-slate-800/60 transition-all duration-200 group"
+              style={{ borderColor: theme.border }}
+            >
+              <p className="leading-normal" style={{ color: theme.text }}>
+                "{story.text}"
+              </p>
+              <div className="flex items-center justify-between border-t pt-2 mt-1 not-italic font-semibold text-[11px]"
+                   style={{ borderColor: theme.border }}>
+                <span style={{ color: theme.primary }}>{story.pet}</span>
+                <span className="font-medium" style={{ color: theme.textMuted }}>Adopter: {story.owner}</span>
               </div>
-            </div>
-          );
-        })}
+              <span title="Success item emoji" className="absolute -top-2 -right-1 text-xl select-none transition-transform group-hover:rotate-12">{story.emoji}</span>
+            </blockquote>
+          ))}
+        </div>
       </div>
 
     </div>
