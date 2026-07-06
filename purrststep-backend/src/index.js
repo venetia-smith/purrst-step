@@ -4,6 +4,8 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { env } from "./env.js";
 import { supabaseAdmin } from "./supabase.js";
+import adoptionRoutes from "./routes/adoption.routes.js";
+import marketplaceRoutes from "./routes/marketplace.routes.js";
 
 const app = express();
 
@@ -38,33 +40,36 @@ app.get("/health", (req, res) => {
 });
 
 app.get("/supabase-health", async (req, res) => {
-    try {
-      const { data, error } = await supabaseAdmin.auth.admin.listUsers({
-        page: 1,
-        perPage: 1
-      });
-  
-      if (error) {
-        return res.status(500).json({
-          ok: false,
-          message: "Supabase connection failed",
-          error: error.message
-        });
-      }
-  
-      return res.json({
-        ok: true,
-        message: "Backend connected to Supabase successfully",
-        usersChecked: data.users.length
-      });
-    } catch (err) {
+  try {
+    const { data, error } = await supabaseAdmin.auth.admin.listUsers({
+      page: 1,
+      perPage: 1
+    });
+
+    if (error) {
       return res.status(500).json({
         ok: false,
-        message: "Supabase test crashed",
-        error: err.message
+        message: "Supabase connection failed",
+        error: error.message
       });
     }
-  });
+
+    return res.json({
+      ok: true,
+      message: "Backend connected to Supabase successfully",
+      usersChecked: data.users.length
+    });
+  } catch (err) {
+    return res.status(500).json({
+      ok: false,
+      message: "Supabase test crashed",
+      error: err.message
+    });
+  }
+});
+
+app.use("/api/adoption", adoptionRoutes);
+app.use("/api/marketplace", marketplaceRoutes);
 
 app.listen(env.port, () => {
   console.log(`Purrst Step backend running on http://localhost:${env.port}`);
