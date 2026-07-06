@@ -1,6 +1,7 @@
 // src/GameScreen.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { catThemes } from './themeStyles';
+import { apiFetch } from './lib/api';
 import { 
   Volume2, VolumeX, Play, HelpCircle, ChevronRight, Target, Lock, Sparkles, Heart, Info 
 } from 'lucide-react';
@@ -16,7 +17,9 @@ export default function GameScreen({ currentTheme = 'orange' }) {
 
   // Progression Engine States
   const [currentLessonId, setCurrentLessonId] = useState(1);
-  const [unlockedLessons, setUnlockedLessons] = useState([1]); 
+  const [unlockedLessons, setUnlockedLessons] = useState([1]);
+  const [isSavingProgress, setIsSavingProgress] = useState(false);
+const [gameMessage, setGameMessage] = useState(''); 
 
   const theme = catThemes[currentTheme] || catThemes.orange;
   const bgmRef = useRef(null);
@@ -52,6 +55,31 @@ export default function GameScreen({ currentTheme = 'orange' }) {
     return () => { if (bgmRef.current) bgmRef.current.pause(); };
   }, []);
 
+  useEffect(() => {
+    const loadGameProgress = async () => {
+      try {
+        const { progress } = await apiFetch('/api/game/progress');
+  
+        setCurrentLessonId(progress.current_lesson_id || 1);
+        setUnlockedLessons(progress.unlocked_lessons || [1]);
+        setCurrentStage(progress.current_stage || 'intro');
+  
+        if (progress.rescued_mello) {
+          setGameMessage('Loaded your saved Mello progress 🐾');
+          setTimeout(() => setGameMessage(''), 2500);
+        }
+      } catch (err) {
+        console.log('Game progress load skipped:', err.message);
+  
+        if (err.message === 'Missing auth token' || err.message === 'Invalid auth token') {
+          setGameMessage('Sign in to save your game progress.');
+        }
+      }
+    };
+  
+    loadGameProgress();
+  }, []);
+
   const toggleMusic = () => {
     if (isPlayingBGM) {
       bgmRef.current.pause();
@@ -59,6 +87,40 @@ export default function GameScreen({ currentTheme = 'orange' }) {
     } else {
       bgmRef.current.play().catch(() => {});
       setIsPlayingBGM(true);
+    }
+  };
+
+  const saveGameProgress = async ({
+    lessonId,
+    unlocked,
+    stage,
+    rescued
+  }) => {
+    try {
+      setIsSavingProgress(true);
+  
+      await apiFetch('/api/game/progress', {
+        method: 'POST',
+        body: JSON.stringify({
+          current_lesson_id: lessonId,
+          unlocked_lessons: unlocked,
+          current_stage: stage,
+          rescued_mello: rescued
+        })
+      });
+  
+      setGameMessage('Progress saved 🐾');
+      setTimeout(() => setGameMessage(''), 2000);
+    } catch (err) {
+      console.error('Failed to save game progress:', err);
+  
+      if (err.message === 'Missing auth token' || err.message === 'Invalid auth token') {
+        setGameMessage('Sign in to save your game progress.');
+      } else {
+        setGameMessage('Could not save progress right now.');
+      }
+    } finally {
+      setIsSavingProgress(false);
     }
   };
 
@@ -80,7 +142,7 @@ export default function GameScreen({ currentTheme = 'orange' }) {
         setCurrentStage('entrance_scene');
         setEntranceIndex(0);
         setIsFading(false);
-        unlockNextLesson(2);
+        unlockNextLesson(2, 'entrance_scene', false);
       }, 400);
     }
   };
@@ -96,15 +158,37 @@ export default function GameScreen({ currentTheme = 'orange' }) {
     setTimeout(() => {
       setCurrentStage('kitten_revealed');
       setIsFading(false);
-      unlockNextLesson(3);
+      unlockNextLesson(3, 'kitten_revealed', true);
     }, 400);
   };
 
-  const unlockNextLesson = (id) => {
-    if (!unlockedLessons.includes(id) && id <= 3) {
-      setUnlockedLessons([...unlockedLessons, id]);
-    }
+  const unlockNextLesson = (id, stageOverride = currentStage, rescuedOverride = false) => {
+    if (id > 10) return;
+  
+    const nextUnlocked = unlockedLessons.includes(id)
+      ? unlockedLessons
+      : [...unlockedLessons, id].sort((a, b) => a - b);
+  
+    setUnlockedLessons(nextUnlocked);
     setCurrentLessonId(id);
+  
+    saveGameProgress({
+      lessonId: id,
+      unlocked: nextUnlocked,
+      stage: stageOverride,
+      rescued: rescuedOverride || id >= 3
+    });
+  };
+
+  const handleBackToDashboard = () => {
+    setCurrentStage('intro');
+  
+    saveGameProgress({
+      lessonId: currentLessonId,
+      unlocked: unlockedLessons,
+      stage: 'intro',
+      rescued: unlockedLessons.includes(3)
+    });
   };
 
   return (
@@ -117,6 +201,17 @@ export default function GameScreen({ currentTheme = 'orange' }) {
             <span>🐾</span> PawSpace Learn Room
           </h2>
           <p className="text-xs text-slate-500">Play through stories to unlock sweet guides on taking care of cats!</p>
+          {gameMessage && (
+  <p className="text-[11px] font-semibold mt-1" style={{ color: theme.primary }}>
+    {gameMessage}
+  </p>
+)}
+
+{isSavingProgress && (
+  <p className="text-[10px] text-slate-400 mt-0.5">
+    Saving progress...
+  </p>
+)}
         </div>
 
         <button 
@@ -259,11 +354,11 @@ export default function GameScreen({ currentTheme = 'orange' }) {
                 You saved Mello! She is warm and safe indoors now. ❤️
               </p>
               <button 
-                onClick={() => setCurrentStage('intro')}
-                className="text-[10px] font-bold text-orange-400 uppercase tracking-wider block hover:underline"
-              >
-                Back to Dashboard →
-              </button>
+  onClick={handleBackToDashboard}
+  className="text-[10px] font-bold text-orange-400 uppercase tracking-wider block hover:underline"
+>
+  Back to Dashboard →
+</button>
             </div>
           </div>
         )}
