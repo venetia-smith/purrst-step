@@ -7,6 +7,7 @@ import GameScreen from './GameScreen';
 import NotificationsTab from './NotificationsTab';
 import SettingsTab from './SettingsTab';
 import { catThemes } from './themeStyles';
+import AuthTab from './AuthTab';
 import { 
   Home, Gamepad2, ShoppingBag, User, Bell, Settings, Info, Search 
 } from 'lucide-react';
@@ -50,6 +51,8 @@ export default function App() {
             ℹ️ About Us Project Specs Coming Soon!
           </div>
         );
+        case 'auth':
+  return <AuthTab currentTheme={currentTheme} />;
       default:
         return <HomeTab theme={theme} onNavigate={(tab) => setCurrentTab(tab)} />;
     }
@@ -59,6 +62,7 @@ export default function App() {
     { id: 'home', label: 'Home', icon: Home },
     { id: 'game', label: 'Game Learn', icon: Gamepad2 },
     { id: 'adoption', label: 'Adoption Marketplace', icon: ShoppingBag },
+    { id: 'auth', label: 'Sign In', icon: User },
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'settings', label: 'Settings', icon: Settings },

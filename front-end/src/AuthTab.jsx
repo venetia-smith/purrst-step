@@ -1,6 +1,8 @@
 // src/AuthTab.jsx
 import React, { useState } from 'react';
 import { catThemes } from './themeStyles';
+import { supabase } from './lib/supabase';
+import { apiFetch } from './lib/api';
 import { Mail, Lock, User, Eye, EyeOff, LogIn, UserPlus, Sparkles, Sun, Moon } from 'lucide-react';
 
 export default function AuthTab({ currentTheme = 'orange' }) {
@@ -20,12 +22,47 @@ export default function AuthTab({ currentTheme = 'orange' }) {
   const labelColor = isDarkMode ? 'text-slate-300' : 'text-slate-600';
   const subtextColor = isDarkMode ? 'text-slate-400' : 'text-slate-500';
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isSignUp) {
-      alert(`Account initialization requested for ${formData.email || 'guest parent'}! Welcome to PawSpace! 🐾`);
-    } else {
-      alert(`Welcome back to your sanctuary workspace node! ✨`);
+  
+    try {
+      if (isSignUp) {
+        const { data, error } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password
+        });
+  
+        if (error) throw error;
+  
+        if (data.session) {
+          await apiFetch('/api/auth/sync-user', {
+            method: 'POST',
+            body: JSON.stringify({
+              display_name: formData.name
+            })
+          });
+  
+          alert('Account created and profile synced successfully!');
+        } else {
+          alert('Account created. Please check your email to confirm your account.');
+        }
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password
+        });
+  
+        if (error) throw error;
+  
+        await apiFetch('/api/auth/sync-user', {
+          method: 'POST',
+          body: JSON.stringify({})
+        });
+  
+        alert('Signed in successfully!');
+      }
+    } catch (err) {
+      alert(err.message || 'Authentication failed');
     }
   };
 
