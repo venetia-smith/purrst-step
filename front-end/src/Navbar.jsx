@@ -31,7 +31,7 @@ export default function Navbar({ currentTab, setCurrentTab, currentTheme, setCur
           {/* Brand Identity Label */}
           <div className="flex items-center gap-2 mb-8 px-2 select-none">
             <span className="text-xl">🐾</span>
-            <span className="text-base font-semibold text-slate-800">PawSpace</span>
+            <span className="text-base font-semibold text-slate-800">Purrst Step</span>
           </div>
 
           {/* Core Navigation Triggers */}

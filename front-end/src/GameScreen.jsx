@@ -198,7 +198,7 @@ const [gameMessage, setGameMessage] = useState('');
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-xl font-bold tracking-tight flex items-center gap-2">
-            <span>🐾</span> PawSpace Learn Room
+            <span>🐾</span> Purrst Step Learn Room
           </h2>
           <p className="text-xs text-slate-500">Play through stories to unlock sweet guides on taking care of cats!</p>
           {gameMessage && (
@@ -368,13 +368,13 @@ const [gameMessage, setGameMessage] = useState('');
           <div className="absolute inset-0 bg-slate-950/95 z-40 p-8 flex flex-col justify-between animate-fadeIn">
             <div className="space-y-3">
               <h3 className="text-xs font-bold uppercase tracking-wider text-orange-400 border-b border-slate-800 pb-2">
-                {activeModal === 'instructions' ? '📖 How to Play' : '✨ About PawSpace'}
+                {activeModal === 'instructions' ? '📖 How to Play' : '✨ About Purrst Step'}
               </h3>
               <p className="text-xs text-slate-300 leading-relaxed max-w-xl">
                 {activeModal === 'instructions' ? (
                   "Read through the narrative dialog updates. When you hear or see clues, interact directly with highlighted spaces inside the room to advance your lesson progression charts."
                 ) : (
-                  "We love cats! PawSpace helps people understand feline behaviors, nutritional balances, and adoption workflows through simple, playful software mockups."
+                  "We love cats! Purrst Step helps people understand feline behaviors, nutritional balances, and adoption workflows through simple, playful software mockups."
                 )}
               </p>
             </div>
