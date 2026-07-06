@@ -8,6 +8,7 @@ import adoptionRoutes from "./routes/adoption.routes.js";
 import marketplaceRoutes from "./routes/marketplace.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import meRoutes from "./routes/me.routes.js";
+import gameRoutes from "./routes/game.routes.js";
 
 const app = express();
 
@@ -74,6 +75,7 @@ app.use("/api/adoption", adoptionRoutes);
 app.use("/api/marketplace", marketplaceRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/me", meRoutes);
+app.use("/api/game", gameRoutes);
 
 app.listen(env.port, () => {
   console.log(`Purrst Step backend running on http://localhost:${env.port}`);
