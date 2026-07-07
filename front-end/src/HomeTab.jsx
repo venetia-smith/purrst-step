@@ -108,18 +108,41 @@ export default function HomeTab({ theme, onNavigate, onOpenProfile }) {
     }
   };
 
+  const cardStyle = {
+    backgroundColor: theme.cardBg,
+    borderColor: theme.border,
+    color: theme.text
+  };
+
+  const softCardStyle = {
+    backgroundColor: theme.softBg || theme.background,
+    borderColor: theme.border,
+    color: theme.text
+  };
+
+  const mutedTextStyle = {
+    color: theme.textMuted
+  };
+
+  const inputStyle = {
+    backgroundColor: theme.inputBg || theme.cardBg,
+    borderColor: theme.border,
+    color: theme.text
+  };
+
   return (
     <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 tracking-tight">
       <div className="lg:col-span-2 space-y-6">
         {/* Post Composer Card */}
         <div
-          className="bg-white border rounded-2xl p-5 shadow-sm"
-          style={{ borderColor: theme.border }}
+          className="border rounded-2xl p-5 shadow-sm"
+          style={cardStyle}
         >
           <form onSubmit={handleCreatePost} className="space-y-4">
             <div className="flex gap-3 items-start">
               <div
-                className="w-10 h-10 rounded-full flex items-center justify-center bg-slate-50 text-xl border border-slate-100 shadow-sm cursor-pointer"
+                className="w-10 h-10 rounded-full flex items-center justify-center text-xl border shadow-sm cursor-pointer"
+                style={softCardStyle}
                 onClick={() => openProfile(null)}
               >
                 🐈
@@ -129,7 +152,8 @@ export default function HomeTab({ theme, onNavigate, onOpenProfile }) {
                 value={newPostText}
                 onChange={(e) => setNewPostText(e.target.value)}
                 placeholder="Share a cat-care update..."
-                className="w-full pt-2 bg-transparent border-none outline-none resize-none text-sm font-normal text-slate-700 placeholder:text-slate-400"
+                className="w-full pt-2 bg-transparent border-none outline-none resize-none text-sm font-normal placeholder:text-slate-400"
+                style={{ color: theme.text }}
                 rows="2"
               />
             </div>
@@ -138,7 +162,7 @@ export default function HomeTab({ theme, onNavigate, onOpenProfile }) {
               className="flex flex-wrap items-center justify-between border-t pt-4"
               style={{ borderColor: theme.border }}
             >
-              <div className="flex gap-5 text-xs font-medium text-slate-500">
+              <div className="flex gap-5 text-xs font-medium" style={mutedTextStyle}>
                 <button
                   type="button"
                   className="flex items-center gap-1.5 hover:text-slate-900 transition-colors"
@@ -184,8 +208,8 @@ export default function HomeTab({ theme, onNavigate, onOpenProfile }) {
 
         {/* Feed Filters */}
         <div
-          className="flex justify-center items-center border-b pb-1 text-sm font-medium text-slate-500 relative"
-          style={{ borderColor: theme.border }}
+          className="flex justify-center items-center border-b pb-1 text-sm font-medium relative"
+          style={{ borderColor: theme.border, color: theme.textMuted }}
         >
           <div className="flex gap-10 justify-center">
             {[
@@ -223,23 +247,29 @@ export default function HomeTab({ theme, onNavigate, onOpenProfile }) {
             return (
               <div
                 key={post.id}
-                className="bg-white border rounded-2xl p-5 shadow-sm space-y-4"
-                style={{ borderColor: theme.border }}
+                className="border rounded-2xl p-5 shadow-sm space-y-4"
+                style={cardStyle}
               >
                 <div className="flex justify-between items-center">
                   <div
                     className="flex items-center gap-3 cursor-pointer group"
                     onClick={() => openProfile(author.id)}
                   >
-                    <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-lg border border-slate-100">
+                    <div
+                      className="w-10 h-10 rounded-full flex items-center justify-center text-lg border"
+                      style={softCardStyle}
+                    >
                       {author.avatar}
                     </div>
 
                     <div>
-                      <h4 className="font-semibold text-sm tracking-tight text-slate-800 group-hover:underline">
+                      <h4
+                        className="font-semibold text-sm tracking-tight group-hover:underline"
+                        style={{ color: theme.text }}
+                      >
                         {author.name}
                       </h4>
-                      <p className="text-[11px] font-normal text-slate-400">
+                      <p className="text-[11px] font-normal" style={mutedTextStyle}>
                         {author.handle} • {author.role} • {post.time}
                       </p>
                     </div>
@@ -263,7 +293,12 @@ export default function HomeTab({ theme, onNavigate, onOpenProfile }) {
                       {post.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="text-[10px] font-medium px-2.5 py-0.5 rounded-full bg-slate-50 border border-slate-100 text-slate-500"
+                          className="text-[10px] font-medium px-2.5 py-0.5 rounded-full border"
+                          style={{
+                            backgroundColor: theme.softBg || theme.background,
+                            borderColor: theme.border,
+                            color: theme.textMuted
+                          }}
                         >
                           #{tag}
                         </span>
@@ -274,11 +309,17 @@ export default function HomeTab({ theme, onNavigate, onOpenProfile }) {
 
                 {post.hasImage && (
                   <div
-                    className="rounded-2xl overflow-hidden border bg-slate-50 p-3"
-                    style={{ borderColor: theme.border }}
+                    className="rounded-2xl overflow-hidden border p-3"
+                    style={{
+                      borderColor: theme.border,
+                      backgroundColor: theme.softBg || theme.background
+                    }}
                   >
                     {post.imageUrl ? (
-                      <div className="rounded-xl bg-white overflow-hidden border border-slate-100">
+                      <div
+                        className="rounded-xl overflow-hidden border"
+                        style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
+                      >
                         <img
                           src={post.imageUrl}
                           alt={post.imageAlt || 'Original Purrst Step illustration'}
@@ -295,8 +336,8 @@ export default function HomeTab({ theme, onNavigate, onOpenProfile }) {
                 )}
 
                 <div
-                  className="flex justify-between items-center pt-3 border-t text-xs font-medium text-slate-400"
-                  style={{ borderColor: theme.border }}
+                  className="flex justify-between items-center pt-3 border-t text-xs font-medium"
+                  style={{ borderColor: theme.border, color: theme.textMuted }}
                 >
                   <button
                     className="flex items-center gap-1.5 hover:text-red-500 transition-colors"
@@ -339,7 +380,7 @@ export default function HomeTab({ theme, onNavigate, onOpenProfile }) {
 
                 {post.comments.length > 0 && (
                   <div className="space-y-2 pt-1">
-                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider" style={mutedTextStyle}>
                       Comments
                     </p>
 
@@ -349,11 +390,13 @@ export default function HomeTab({ theme, onNavigate, onOpenProfile }) {
                       return (
                         <div
                           key={comment.id}
-                          className="flex gap-2 p-2.5 bg-slate-50/70 border border-slate-100 rounded-xl"
+                          className="flex gap-2 p-2.5 border rounded-xl"
+                          style={softCardStyle}
                         >
                           <button
                             onClick={() => openProfile(commentAuthor.id)}
-                            className="w-7 h-7 rounded-full bg-white border border-slate-100 flex items-center justify-center text-sm shrink-0"
+                            className="w-7 h-7 rounded-full border flex items-center justify-center text-sm shrink-0"
+                            style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
                           >
                             {commentAuthor.avatar}
                           </button>
@@ -361,12 +404,13 @@ export default function HomeTab({ theme, onNavigate, onOpenProfile }) {
                           <div className="min-w-0">
                             <button
                               onClick={() => openProfile(commentAuthor.id)}
-                              className="text-[11px] font-semibold text-slate-700 hover:underline"
+                              className="text-[11px] font-semibold hover:underline"
+                              style={{ color: theme.text }}
                             >
                               {commentAuthor.name}
                             </button>
 
-                            <p className="text-[11px] leading-normal text-slate-500">
+                            <p className="text-[11px] leading-normal" style={mutedTextStyle}>
                               {comment.text}
                             </p>
                           </div>
@@ -398,11 +442,11 @@ export default function HomeTab({ theme, onNavigate, onOpenProfile }) {
       {/* Right Sidebar */}
       <div className="space-y-6">
         <div
-          className="bg-white border rounded-2xl p-5 shadow-sm"
-          style={{ borderColor: theme.border }}
+          className="border rounded-2xl p-5 shadow-sm"
+          style={cardStyle}
         >
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
-            <TrendingUp className="w-3.5 h-3.5 text-slate-400" /> Trending
+          <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 flex items-center gap-2" style={mutedTextStyle}>
+            <TrendingUp className="w-3.5 h-3.5" /> Trending
           </h3>
 
           <div className="space-y-3.5">
@@ -412,10 +456,10 @@ export default function HomeTab({ theme, onNavigate, onOpenProfile }) {
               { tag: '#RescueCats', posts: '1,256 posts' }
             ].map((item) => (
               <div key={item.tag} className="cursor-pointer group">
-                <p className="text-sm font-medium text-slate-700 group-hover:text-slate-900 group-hover:underline">
+                <p className="text-sm font-medium group-hover:underline" style={{ color: theme.text }}>
                   {item.tag}
                 </p>
-                <p className="text-[11px] font-normal text-slate-400 mt-0.5">
+                <p className="text-[11px] font-normal mt-0.5" style={mutedTextStyle}>
                   {item.posts}
                 </p>
               </div>
@@ -424,11 +468,11 @@ export default function HomeTab({ theme, onNavigate, onOpenProfile }) {
         </div>
 
         <div
-          className="bg-white border rounded-2xl p-5 shadow-sm"
-          style={{ borderColor: theme.border }}
+          className="border rounded-2xl p-5 shadow-sm"
+          style={cardStyle}
         >
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+            <h3 className="text-xs font-semibold uppercase tracking-wider" style={mutedTextStyle}>
               Suggested Profiles
             </h3>
           </div>
@@ -441,15 +485,18 @@ export default function HomeTab({ theme, onNavigate, onOpenProfile }) {
                 onClick={() => openProfile(profile.id)}
               >
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <span className="text-base p-1.5 bg-slate-50 border border-slate-100 rounded-xl">
+                  <span
+                    className="text-base p-1.5 border rounded-xl"
+                    style={softCardStyle}
+                  >
                     {profile.avatar}
                   </span>
 
                   <div className="min-w-0">
-                    <p className="text-xs font-medium text-slate-700 group-hover:underline truncate">
+                    <p className="text-xs font-medium group-hover:underline truncate" style={{ color: theme.text }}>
                       {profile.name}
                     </p>
-                    <p className="text-[10px] font-normal text-slate-400 truncate">
+                    <p className="text-[10px] font-normal truncate" style={mutedTextStyle}>
                       {profile.handle}
                     </p>
                   </div>
@@ -477,10 +524,10 @@ export default function HomeTab({ theme, onNavigate, onOpenProfile }) {
         >
           <div className="flex justify-between items-start">
             <div>
-              <h4 className="text-sm font-semibold tracking-tight text-slate-800 mb-1">
+              <h4 className="text-sm font-semibold tracking-tight mb-1" style={{ color: theme.text }}>
                 Small act, big impact 💜
               </h4>
-              <p className="text-xs font-normal leading-relaxed text-slate-500">
+              <p className="text-xs font-normal leading-relaxed" style={mutedTextStyle}>
                 Your donation can feed, heal and shelter cats in need.
               </p>
             </div>

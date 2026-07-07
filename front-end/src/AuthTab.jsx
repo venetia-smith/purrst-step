@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { catThemes } from './themeStyles';
+import { getCatTheme } from './themeStyles';
 import { supabase } from './lib/supabase';
 import { apiFetch } from './lib/api';
 import {
@@ -13,13 +13,15 @@ import {
   Sparkles,
   ShieldCheck,
   Heart,
-  PawPrint
+  PawPrint,
+  BadgeCheck
 } from 'lucide-react';
 
-export default function AuthTab({ currentTheme = 'orange' }) {
+export default function AuthTab({ currentTheme = 'orange', isDarkMode = false }) {
   const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDemoSubmitting, setIsDemoSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
 
   const [formData, setFormData] = useState({
@@ -29,7 +31,14 @@ export default function AuthTab({ currentTheme = 'orange' }) {
     terms: false
   });
 
-  const theme = catThemes[currentTheme] || catThemes.orange;
+  const theme = getCatTheme(currentTheme, isDarkMode);
+
+  const syncSignedInUser = async (displayName = undefined) => {
+    await apiFetch('/api/auth/sync-user', {
+      method: 'POST',
+      body: JSON.stringify(displayName ? { display_name: displayName } : {})
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,13 +55,7 @@ export default function AuthTab({ currentTheme = 'orange' }) {
         if (error) throw error;
 
         if (data.session) {
-          await apiFetch('/api/auth/sync-user', {
-            method: 'POST',
-            body: JSON.stringify({
-              display_name: formData.name
-            })
-          });
-
+          await syncSignedInUser(formData.name);
           setStatusMessage('Account created successfully. Welcome to Purrst Step.');
         } else {
           setStatusMessage('Account created. Please check your email to confirm your account.');
@@ -65,17 +68,43 @@ export default function AuthTab({ currentTheme = 'orange' }) {
 
         if (error) throw error;
 
-        await apiFetch('/api/auth/sync-user', {
-          method: 'POST',
-          body: JSON.stringify({})
-        });
-
+        await syncSignedInUser();
         setStatusMessage('Signed in successfully. Opening your dashboard...');
       }
     } catch (err) {
       setStatusMessage(err.message || 'Authentication failed. Please try again.');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    setStatusMessage('');
+
+    const demoEmail = import.meta.env.VITE_DEMO_EMAIL;
+    const demoPassword = import.meta.env.VITE_DEMO_PASSWORD;
+
+    if (!demoEmail || !demoPassword) {
+      setStatusMessage('Demo login is not configured yet. Add VITE_DEMO_EMAIL and VITE_DEMO_PASSWORD.');
+      return;
+    }
+
+    setIsDemoSubmitting(true);
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: demoEmail,
+        password: demoPassword
+      });
+
+      if (error) throw error;
+
+      await syncSignedInUser('Judge Demo');
+      setStatusMessage('Judge demo signed in. Opening the dashboard...');
+    } catch (err) {
+      setStatusMessage(err.message || 'Demo login failed. Please check the demo account.');
+    } finally {
+      setIsDemoSubmitting(false);
     }
   };
 
@@ -93,7 +122,6 @@ export default function AuthTab({ currentTheme = 'orange' }) {
   return (
     <div className="min-h-[720px] w-full flex items-center justify-center font-sans tracking-tight">
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-        {/* LEFT BRAND PANEL */}
         <div
           className="rounded-3xl border shadow-sm overflow-hidden relative p-8 flex flex-col justify-between min-h-[560px]"
           style={{
@@ -117,7 +145,11 @@ export default function AuthTab({ currentTheme = 'orange' }) {
                   borderColor: theme.border
                 }}
               >
-                🐾
+                <img
+  src="/assets/logo.png"
+  alt="Purrst Step logo"
+  className="w-7 h-7 object-contain"
+/>
               </div>
 
               <div>
@@ -225,7 +257,6 @@ export default function AuthTab({ currentTheme = 'orange' }) {
           </div>
         </div>
 
-        {/* AUTH CARD */}
         <div
           className="rounded-3xl border shadow-sm p-6 sm:p-8 flex items-center"
           style={{
@@ -277,7 +308,7 @@ export default function AuthTab({ currentTheme = 'orange' }) {
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full px-3.5 py-2.5 rounded-xl text-xs font-normal border outline-none transition-all"
                     style={{
-                      backgroundColor: theme.background,
+                      backgroundColor: theme.inputBg || theme.background,
                       borderColor: theme.border,
                       color: theme.text
                     }}
@@ -302,7 +333,7 @@ export default function AuthTab({ currentTheme = 'orange' }) {
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full px-3.5 py-2.5 rounded-xl text-xs font-normal border outline-none transition-all"
                   style={{
-                    backgroundColor: theme.background,
+                    backgroundColor: theme.inputBg || theme.background,
                     borderColor: theme.border,
                     color: theme.text
                   }}
@@ -327,7 +358,7 @@ export default function AuthTab({ currentTheme = 'orange' }) {
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     className="w-full pl-3.5 pr-10 py-2.5 rounded-xl text-xs font-normal border outline-none transition-all"
                     style={{
-                      backgroundColor: theme.background,
+                      backgroundColor: theme.inputBg || theme.background,
                       borderColor: theme.border,
                       color: theme.text
                     }}
@@ -380,7 +411,7 @@ export default function AuthTab({ currentTheme = 'orange' }) {
 
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isDemoSubmitting}
                 className="w-full py-3 px-6 rounded-xl font-semibold text-xs flex items-center justify-center gap-2 shadow-sm text-white transition-all transform hover:scale-[1.01] active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
                 style={{ backgroundColor: theme.primary }}
               >
@@ -399,6 +430,37 @@ export default function AuthTab({ currentTheme = 'orange' }) {
                 )}
               </button>
             </form>
+
+            {!isSignUp && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="h-px flex-1" style={{ backgroundColor: theme.border }} />
+                  <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: theme.textMuted }}>
+                    Demo access
+                  </span>
+                  <div className="h-px flex-1" style={{ backgroundColor: theme.border }} />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleDemoLogin}
+                  disabled={isSubmitting || isDemoSubmitting}
+                  className="w-full py-3 px-6 rounded-xl font-semibold text-xs flex items-center justify-center gap-2 border transition-all transform hover:scale-[1.01] active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+                  style={{
+                    backgroundColor: theme.background,
+                    borderColor: theme.border,
+                    color: theme.text
+                  }}
+                >
+                  <BadgeCheck className="w-4 h-4" style={{ color: theme.primary }} />
+                  {isDemoSubmitting ? 'Opening judge demo...' : 'Continue as Judge Demo'}
+                </button>
+
+                <p className="text-[10px] text-center leading-relaxed" style={{ color: theme.textMuted }}>
+                  For hackathon judges: opens a preloaded demo account with safe sample data.
+                </p>
+              </div>
+            )}
 
             <div className="text-center pt-1">
               <p className="text-xs font-normal" style={{ color: theme.textMuted }}>

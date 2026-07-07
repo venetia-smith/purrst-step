@@ -7,7 +7,7 @@ import GameScreen from './GameScreen';
 import NotificationsTab from './NotificationsTab';
 import SettingsTab from './SettingsTab';
 import AuthTab from './AuthTab';
-import { catThemes } from './themeStyles';
+import { catThemes, getCatTheme } from './themeStyles';
 import { supabase } from './lib/supabase';
 import {
   Home,
@@ -18,7 +18,9 @@ import {
   Settings,
   Info,
   Search,
-  LogOut
+  LogOut,
+  Moon,
+  Sun
 } from 'lucide-react';
 
 function SplashScreen({ theme }) {
@@ -35,7 +37,11 @@ function SplashScreen({ theme }) {
           className="w-20 h-20 mx-auto rounded-3xl flex items-center justify-center text-4xl shadow-sm border"
           style={{ backgroundColor: theme.background, borderColor: theme.border }}
         >
-          🐾
+          <img
+  src="/assets/logo.png"
+  alt="Purrst Step logo"
+  className="w-14 h-14 object-contain"
+/>
         </div>
 
         <div>
@@ -59,15 +65,23 @@ function SplashScreen({ theme }) {
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState('home');
-  const [currentTheme, setCurrentTheme] = useState('orange');
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState(() => localStorage.getItem('purrst-theme') || 'orange');
+  const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem('purrst-dark-mode') === 'true');
   const [selectedProfileId, setSelectedProfileId] = useState(null);
 
   const [session, setSession] = useState(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [showSplash, setShowSplash] = useState(true);
 
-  const theme = catThemes[currentTheme] || catThemes.orange;
+  const theme = getCatTheme(currentTheme, isDarkMode);
+
+  useEffect(() => {
+    localStorage.setItem('purrst-theme', currentTheme);
+  }, [currentTheme]);
+
+  useEffect(() => {
+    localStorage.setItem('purrst-dark-mode', String(isDarkMode));
+  }, [isDarkMode]);
 
   useEffect(() => {
     let isMounted = true;
@@ -120,6 +134,10 @@ export default function App() {
     setCurrentTab('profile');
   };
 
+  const handleThemeChange = (newTheme) => {
+    setCurrentTheme(newTheme);
+  };
+
   const renderTabContent = () => {
     switch (currentTab) {
       case 'home':
@@ -144,13 +162,13 @@ export default function App() {
           />
         );
       case 'notifications':
-        return <NotificationsTab theme={theme} currentTheme={currentTheme} />;
+        return <NotificationsTab theme={theme} currentTheme={currentTheme} isDarkMode={isDarkMode} />;
       case 'settings':
         return (
           <SettingsTab
             theme={theme}
             currentTheme={currentTheme}
-            onThemeChange={(newTheme) => setCurrentTheme(newTheme)}
+            onThemeChange={handleThemeChange}
             isDarkMode={isDarkMode}
             onDarkModeToggle={setIsDarkMode}
           />
@@ -200,7 +218,7 @@ export default function App() {
         style={{ backgroundColor: theme.background }}
       >
         <div className="max-w-6xl mx-auto">
-          <AuthTab currentTheme={currentTheme} />
+          <AuthTab currentTheme={currentTheme} isDarkMode={isDarkMode} />
         </div>
       </div>
     );
@@ -219,7 +237,11 @@ export default function App() {
       >
         <div>
           <div className="flex items-center gap-2 mb-8 px-2 select-none">
-            <span className="text-xl">🐾</span>
+            <span className="text-xl"><img
+  src="/assets/logo.png"
+  alt="Purrst Step logo"
+  className="w-7 h-7 object-contain"
+/></span>
             <span
               className="text-base font-semibold tracking-tight transition-colors"
               style={{ color: theme.text }}
@@ -304,7 +326,7 @@ export default function App() {
               placeholder="Search cats, people, posts..."
               className="w-full pl-9 pr-4 py-1.5 text-xs font-normal rounded-xl border outline-none transition-all"
               style={{
-                backgroundColor: theme.cardBg,
+                backgroundColor: theme.inputBg || theme.cardBg,
                 borderColor: theme.border,
                 color: theme.text
               }}
@@ -312,6 +334,20 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsDarkMode((current) => !current)}
+              className="h-8 px-3 rounded-full border text-[10px] font-bold flex items-center gap-1.5 transition-all active:scale-95 hover:opacity-90"
+              style={{
+                backgroundColor: theme.cardBg,
+                borderColor: theme.border,
+                color: theme.text
+              }}
+              title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {isDarkMode ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+              {isDarkMode ? 'Light' : 'Dark'}
+            </button>
+
             <div
               className="flex items-center gap-1.5 p-1 rounded-full border shadow-sm transition-colors"
               style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
@@ -327,7 +363,8 @@ export default function App() {
                     backgroundColor: catThemes[themeKey].primary,
                     borderColor: 'transparent',
                     color: '#ffffff',
-                    '--tw-ring-color': theme.primary
+                    '--tw-ring-color': theme.primary,
+                    '--tw-ring-offset-color': theme.background
                   }}
                   title={`Switch to ${catThemes[themeKey].name}`}
                 >

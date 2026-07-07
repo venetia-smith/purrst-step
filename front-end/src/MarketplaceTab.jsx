@@ -133,7 +133,11 @@ export default function AdoptionHomeTab({ theme, isDarkMode }) {
           className={`px-4 py-2 border-b-2 -mb-px transition-all ${activeSubTab === 'browse' ? 'border-purple-600 text-purple-600 font-semibold' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
           style={{ color: activeSubTab === 'browse' ? theme.primary : undefined, borderBottomColor: activeSubTab === 'browse' ? theme.primary : 'transparent' }}
         >
-          🐾 Browse Rescue Cats ({adoptionPets.length})
+          <img
+  src="/assets/logo.png"
+  alt="Purrst Step logo"
+  className="w-7 h-7 object-contain"
+/> Browse Rescue Cats ({adoptionPets.length})
         </button>
         <button 
           onClick={() => setActiveSubTab('supplies')}

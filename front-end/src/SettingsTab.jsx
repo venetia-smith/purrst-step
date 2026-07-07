@@ -1,90 +1,144 @@
 // src/SettingsTab.jsx
 import React, { useState } from 'react';
 import { catThemes } from './themeStyles';
-import { 
-  User, Paintbrush, Bell, Shield, Database, Sun, Moon, 
-  Check, Trash2, Download, Save 
+import {
+  User,
+  Paintbrush,
+  Bell,
+  Shield,
+  Database,
+  Sun,
+  Moon,
+  Check,
+  Trash2,
+  Download,
+  Save
 } from 'lucide-react';
 
-export default function SettingsTab({ currentTheme = 'orange', onThemeChange }) {
+export default function SettingsTab({
+  theme,
+  currentTheme = 'orange',
+  onThemeChange,
+  isDarkMode = false,
+  onDarkModeToggle
+}) {
   const [activeSection, setActiveSection] = useState('profile');
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  
-  const [profile, setProfile] = useState({ name: 'Beau', handle: 'beau_paws', bio: 'Cat lover & proud parent of Sunshine! 🐾' });
-  const [notifs, setNotifs] = useState({ likes: true, comments: true, follows: true, achievements: true, dnd: false });
+
+  const [profile, setProfile] = useState({
+    name: 'Beau',
+    handle: 'beau_paws',
+    bio: 'Cat lover & proud parent of Sunshine! 🐾'
+  });
+
+  const [notifs, setNotifs] = useState({
+    likes: true,
+    comments: true,
+    follows: true,
+    achievements: true,
+    dnd: false
+  });
+
   const [privacy, setPrivacy] = useState({ privateAccount: false });
 
-  const theme = catThemes[currentTheme] || catThemes.orange;
+  const activeTheme = theme || catThemes[currentTheme] || catThemes.orange;
 
-  const cardBg = isDarkMode ? 'bg-slate-900/90 border-slate-800 text-slate-100' : 'bg-white border-slate-100 text-slate-800';
-  const inputBg = isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-slate-50 border-slate-200 text-slate-700';
-  const sectionHeaderColor = isDarkMode ? 'text-slate-400' : 'text-slate-500';
+  const panelStyle = {
+    backgroundColor: activeTheme.cardBg,
+    borderColor: activeTheme.border,
+    color: activeTheme.text
+  };
+
+  const softStyle = {
+    backgroundColor: activeTheme.softBg || activeTheme.background,
+    borderColor: activeTheme.border,
+    color: activeTheme.text
+  };
+
+  const inputStyle = {
+    backgroundColor: activeTheme.inputBg || activeTheme.background,
+    borderColor: activeTheme.border,
+    color: activeTheme.text
+  };
 
   const menuItems = [
     { id: 'profile', label: 'Profile Settings', icon: User },
     { id: 'appearance', label: 'Theme & Appearance', icon: Paintbrush },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'privacy', label: 'Privacy & Security', icon: Shield },
-    { id: 'storage', label: 'Storage & Data', icon: Database },
+    { id: 'storage', label: 'Storage & Data', icon: Database }
   ];
 
   const handleSave = () => {
-    alert("Settings saved successfully! ✨");
+    alert('Settings saved successfully! ✨');
   };
 
   return (
-    <div className={`p-6 rounded-3xl border transition-all duration-300 shadow-xs ${
-      isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50/50 border-slate-200/80'
-    }`}>
-      
-      {/* HEADER SECTION */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 pb-6 border-b border-slate-200/60">
+    <div
+      className="p-6 rounded-3xl border transition-all duration-300 shadow-xs"
+      style={{
+        backgroundColor: activeTheme.background,
+        borderColor: activeTheme.border,
+        color: activeTheme.text
+      }}
+    >
+      <div
+        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 pb-6 border-b"
+        style={{ borderColor: activeTheme.border }}
+      >
         <div>
-          <h2 className={`text-xl font-bold tracking-tight flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+          <h2 className="text-xl font-bold tracking-tight flex items-center gap-2">
             <span>⚙️</span> Settings
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">Customize your profile preferences and app experience.</p>
+          <p className="text-xs mt-0.5" style={{ color: activeTheme.textMuted }}>
+            Customize your profile preferences and app experience.
+          </p>
         </div>
 
-        {/* LIGHT / DARK MODE TOGGLE */}
-        <div className="flex items-center p-1 bg-slate-200/60 rounded-full border border-slate-300/60 shadow-inner">
-          <button 
-            onClick={() => setIsDarkMode(false)}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all ${
-              !isDarkMode ? 'bg-white shadow-xs text-amber-500' : 'text-slate-500 hover:text-slate-800'
-            }`}
+        <div
+          className="flex items-center p-1 rounded-full border shadow-inner"
+          style={{
+            backgroundColor: activeTheme.cardBg,
+            borderColor: activeTheme.border
+          }}
+        >
+          <button
+            onClick={() => onDarkModeToggle?.(false)}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all"
+            style={{
+              backgroundColor: !isDarkMode ? activeTheme.primary : 'transparent',
+              color: !isDarkMode ? '#ffffff' : activeTheme.textMuted
+            }}
           >
             <Sun className="w-3.5 h-3.5" /> Light
           </button>
-          <button 
-            onClick={() => setIsDarkMode(true)}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all ${
-              isDarkMode ? 'bg-slate-900 shadow-xs text-indigo-400' : 'text-slate-500 hover:text-slate-800'
-            }`}
+          <button
+            onClick={() => onDarkModeToggle?.(true)}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all"
+            style={{
+              backgroundColor: isDarkMode ? activeTheme.primary : 'transparent',
+              color: isDarkMode ? '#ffffff' : activeTheme.textMuted
+            }}
           >
             <Moon className="w-3.5 h-3.5" /> Dark
           </button>
         </div>
       </div>
 
-      {/* TWO-COLUMN GRID */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        
-        {/* LEFT COLUMN: NAVIGATION RAIL */}
         <div className="md:col-span-1 space-y-1">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isSelected = activeSection === item.id;
+
             return (
               <button
                 key={item.id}
                 onClick={() => setActiveSection(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold rounded-xl transition-all text-left whitespace-nowrap active:scale-98 ${
-                  isSelected 
-                    ? 'text-white shadow-xs' 
-                    : `${isDarkMode ? 'text-slate-400 hover:bg-slate-800/50 hover:text-white' : 'text-slate-600 hover:bg-slate-100'}`
-                }`}
-                style={{ backgroundColor: isSelected ? theme.primary : 'transparent' }}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold rounded-xl transition-all text-left whitespace-nowrap active:scale-98"
+                style={{
+                  backgroundColor: isSelected ? activeTheme.primary : 'transparent',
+                  color: isSelected ? '#ffffff' : activeTheme.textMuted
+                }}
               >
                 <Icon className="w-4 h-4 shrink-0" />
                 <span>{item.label}</span>
@@ -93,71 +147,115 @@ export default function SettingsTab({ currentTheme = 'orange', onThemeChange }) 
           })}
         </div>
 
-        {/* RIGHT COLUMN: MAIN CONFIG PANE */}
         <div className="md:col-span-3">
-          <div className={`border p-6 rounded-2xl space-y-6 shadow-2xs ${cardBg}`}>
-            
-            {/* PROFILE SECTION */}
+          <div className="border p-6 rounded-2xl space-y-6 shadow-2xs" style={panelStyle}>
             {activeSection === 'profile' && (
               <div className="space-y-4 animate-fadeIn">
-                <h3 className={`text-xs font-bold uppercase tracking-wider ${sectionHeaderColor}`}>Public Profile</h3>
-                
-                <div className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-200 rounded-xl">
-                  <div className="w-14 h-14 rounded-full bg-slate-100 border flex items-center justify-center text-2xl shadow-xs" style={{ borderColor: theme.primary }}>
+                <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: activeTheme.textMuted }}>
+                  Public Profile
+                </h3>
+
+                <div className="flex items-center gap-4 p-4 border rounded-xl" style={softStyle}>
+                  <div
+                    className="w-14 h-14 rounded-full border flex items-center justify-center text-2xl shadow-xs"
+                    style={{
+                      borderColor: activeTheme.primary,
+                      backgroundColor: activeTheme.cardBg
+                    }}
+                  >
                     🐱
                   </div>
                   <div>
-                    <button className="px-3 py-1.5 text-xs font-bold text-white rounded-lg hover:opacity-90 transition-opacity" style={{ backgroundColor: theme.primary }}>
+                    <button
+                      className="px-3 py-1.5 text-xs font-bold text-white rounded-lg hover:opacity-90 transition-opacity"
+                      style={{ backgroundColor: activeTheme.primary }}
+                    >
                       Change Avatar
                     </button>
-                    <span className="text-[11px] text-slate-400 block mt-1">Supports JPG, PNG or custom emojis.</span>
+                    <span className="text-[11px] block mt-1" style={{ color: activeTheme.textMuted }}>
+                      Supports JPG, PNG or custom emojis.
+                    </span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-600">Display Name</label>
-                    <input type="text" className={`w-full px-3 py-2 text-xs font-medium border rounded-xl focus:outline-none ${inputBg}`} value={profile.name} onChange={(e) => setProfile({...profile, name: e.target.value})} />
+                    <label className="text-xs font-bold" style={{ color: activeTheme.text }}>
+                      Display Name
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 text-xs font-medium border rounded-xl focus:outline-none"
+                      style={inputStyle}
+                      value={profile.name}
+                      onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                    />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-600">Profile Handle</label>
-                    <input type="text" className={`w-full px-3 py-2 text-xs font-medium border rounded-xl focus:outline-none ${inputBg}`} value={profile.handle} onChange={(e) => setProfile({...profile, handle: e.target.value})} />
+                    <label className="text-xs font-bold" style={{ color: activeTheme.text }}>
+                      Profile Handle
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 text-xs font-medium border rounded-xl focus:outline-none"
+                      style={inputStyle}
+                      value={profile.handle}
+                      onChange={(e) => setProfile({ ...profile, handle: e.target.value })}
+                    />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-600">Bio</label>
-                  <textarea rows="3" className={`w-full px-3 py-2 text-xs font-medium border rounded-xl resize-none focus:outline-none ${inputBg}`} value={profile.bio} onChange={(e) => setProfile({...profile, bio: e.target.value})} />
+                  <label className="text-xs font-bold" style={{ color: activeTheme.text }}>
+                    Bio
+                  </label>
+                  <textarea
+                    rows="3"
+                    className="w-full px-3 py-2 text-xs font-medium border rounded-xl resize-none focus:outline-none"
+                    style={inputStyle}
+                    value={profile.bio}
+                    onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+                  />
                 </div>
               </div>
             )}
 
-            {/* THEME & APPEARANCE */}
             {activeSection === 'appearance' && (
               <div className="space-y-4 animate-fadeIn">
-                <h3 className={`text-xs font-bold uppercase tracking-wider ${sectionHeaderColor}`}>Theme Hub</h3>
-                <p className="text-xs text-slate-500">Pick an interactive color framework to apply across your workspace dashboard tabs.</p>
-                
+                <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: activeTheme.textMuted }}>
+                  Theme Hub
+                </h3>
+                <p className="text-xs" style={{ color: activeTheme.textMuted }}>
+                  Pick a color theme and choose light or dark mode for the whole app.
+                </p>
+
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {Object.keys(catThemes).map((tKey) => {
                     const currentTarget = catThemes[tKey];
                     const isActive = currentTheme === tKey;
+
                     return (
                       <button
                         key={tKey}
                         onClick={() => onThemeChange?.(tKey)}
-                        className={`p-3 border text-left rounded-xl transition-all flex flex-col justify-between h-20 relative active:scale-98 ${
-                          isActive ? 'bg-slate-50 shadow-xs' : 'bg-transparent hover:bg-slate-50/40'
-                        }`}
-                        style={{ borderColor: isActive ? theme.primary : 'rgba(156,163,175,0.2)' }}
+                        className="p-3 border text-left rounded-xl transition-all flex flex-col justify-between h-20 relative active:scale-98"
+                        style={{
+                          borderColor: isActive ? activeTheme.primary : activeTheme.border,
+                          backgroundColor: isActive ? `${activeTheme.primary}12` : activeTheme.cardBg
+                        }}
                       >
-                        <span className="text-xs font-bold capitalize tracking-tight" style={{ color: currentTarget.primary }}>{tKey} Theme</span>
+                        <span className="text-xs font-bold capitalize tracking-tight" style={{ color: currentTarget.primary }}>
+                          {currentTarget.name}
+                        </span>
                         <div className="flex gap-1.5 mt-2">
                           <span className="w-4 h-4 rounded-full border shadow-inner inline-block" style={{ backgroundColor: currentTarget.primary }} />
                           <span className="w-4 h-4 rounded-full border shadow-inner inline-block" style={{ backgroundColor: currentTarget.cardBg }} />
                         </div>
                         {isActive && (
-                          <div className="absolute top-2 right-2 w-4 h-4 rounded-full flex items-center justify-center text-[10px] text-white" style={{ backgroundColor: theme.primary }}>
+                          <div
+                            className="absolute top-2 right-2 w-4 h-4 rounded-full flex items-center justify-center text-[10px] text-white"
+                            style={{ backgroundColor: activeTheme.primary }}
+                          >
                             <Check className="w-2 h-2 stroke-[4px]" />
                           </div>
                         )}
@@ -168,29 +266,38 @@ export default function SettingsTab({ currentTheme = 'orange', onThemeChange }) 
               </div>
             )}
 
-            {/* NOTIFICATIONS */}
             {activeSection === 'notifications' && (
               <div className="space-y-4 animate-fadeIn">
-                <h3 className={`text-xs font-bold uppercase tracking-wider ${sectionHeaderColor}`}>Notification Settings</h3>
-                
-                <div className="divide-y divide-slate-100 space-y-3">
+                <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: activeTheme.textMuted }}>
+                  Notification Settings
+                </h3>
+
+                <div className="space-y-3">
                   {[
                     { key: 'likes', label: 'Likes Activity alerts', desc: 'Notify me when someone likes an activity update.' },
                     { key: 'comments', label: 'Commentary dialogue feed', desc: 'Alert me on comment threads posted inside my network profile.' },
                     { key: 'follows', label: 'Follower updates', desc: 'Trigger indicators when other cat parents follow back.' },
-                    { key: 'achievements', label: 'Badge milestone alerts', desc: 'Congratulate me when custom cat care badges clear.' },
+                    { key: 'achievements', label: 'Badge milestone alerts', desc: 'Congratulate me when custom cat care badges clear.' }
                   ].map((pref) => (
-                    <div key={pref.key} className="flex items-center justify-between pt-3 first:pt-0">
+                    <div
+                      key={pref.key}
+                      className="flex items-center justify-between border rounded-xl p-3"
+                      style={softStyle}
+                    >
                       <div className="max-w-md pr-4">
-                        <label className="text-xs font-bold block text-slate-800">{pref.label}</label>
-                        <span className="text-[11px] text-slate-400 block">{pref.desc}</span>
+                        <label className="text-xs font-bold block" style={{ color: activeTheme.text }}>
+                          {pref.label}
+                        </label>
+                        <span className="text-[11px] block" style={{ color: activeTheme.textMuted }}>
+                          {pref.desc}
+                        </span>
                       </div>
-                      <input 
-                        type="checkbox" 
-                        checked={notifs[pref.key]} 
-                        onChange={(e) => setNotifs({...notifs, [pref.key]: e.target.checked})}
+                      <input
+                        type="checkbox"
+                        checked={notifs[pref.key]}
+                        onChange={(e) => setNotifs({ ...notifs, [pref.key]: e.target.checked })}
                         className="w-4 h-4 rounded-md border cursor-pointer"
-                        style={{ accentColor: theme.primary }}
+                        style={{ accentColor: activeTheme.primary }}
                       />
                     </div>
                   ))}
@@ -198,49 +305,79 @@ export default function SettingsTab({ currentTheme = 'orange', onThemeChange }) 
               </div>
             )}
 
-            {/* PRIVACY & SECURITY */}
             {activeSection === 'privacy' && (
               <div className="space-y-4 animate-fadeIn">
-                <h3 className={`text-xs font-bold uppercase tracking-wider ${sectionHeaderColor}`}>Privacy Visibilities</h3>
-                
-                <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: activeTheme.textMuted }}>
+                  Privacy & Security
+                </h3>
+
+                <div className="flex items-center justify-between p-4 border rounded-xl" style={softStyle}>
                   <div className="max-w-md">
-                    <h4 className="text-xs font-bold text-slate-800">Private Sanctuary Mode</h4>
-                    <p className="text-[11px] text-slate-400 mt-0.5">When active, only accepted followers can view your cat logs, pictures, and achievement lists.</p>
+                    <h4 className="text-xs font-bold" style={{ color: activeTheme.text }}>
+                      Private Sanctuary Mode
+                    </h4>
+                    <p className="text-[11px] mt-0.5" style={{ color: activeTheme.textMuted }}>
+                      When active, only accepted followers can view your cat logs, pictures, and achievement lists.
+                    </p>
                   </div>
-                  <input 
-                    type="checkbox" 
-                    checked={privacy.privateAccount} 
-                    onChange={(e) => setPrivacy({...privacy, privateAccount: e.target.checked})}
+                  <input
+                    type="checkbox"
+                    checked={privacy.privateAccount}
+                    onChange={(e) => setPrivacy({ ...privacy, privateAccount: e.target.checked })}
                     className="w-4 h-4 rounded-md border cursor-pointer"
-                    style={{ accentColor: theme.primary }}
+                    style={{ accentColor: activeTheme.primary }}
                   />
                 </div>
               </div>
             )}
 
-            {/* STORAGE & DATA */}
             {activeSection === 'storage' && (
               <div className="space-y-4 animate-fadeIn">
-                <h3 className={`text-xs font-bold uppercase tracking-wider ${sectionHeaderColor}`}>Local Cache & Storage Assets</h3>
-                
+                <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: activeTheme.textMuted }}>
+                  Local Cache & Storage Assets
+                </h3>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex flex-col justify-between gap-3">
+                  <div className="p-4 border rounded-xl flex flex-col justify-between gap-3" style={softStyle}>
                     <div>
-                      <h4 className="text-xs font-bold text-slate-800">Clear Storage Cache</h4>
-                      <p className="text-[11px] text-slate-400 mt-0.5">Flush pre-loaded timeline images and temporary layout buffers to clear up memory space.</p>
+                      <h4 className="text-xs font-bold" style={{ color: activeTheme.text }}>
+                        Clear Storage Cache
+                      </h4>
+                      <p className="text-[11px] mt-0.5" style={{ color: activeTheme.textMuted }}>
+                        Flush pre-loaded timeline images and temporary layout buffers.
+                      </p>
                     </div>
-                    <button onClick={() => alert("Cache cleared successfully.")} className="w-fit px-3 py-1.5 text-[11px] font-bold bg-rose-50 border border-rose-200 text-rose-600 rounded-lg hover:bg-rose-100 flex items-center gap-1.5 transition-all active:scale-95">
-                      <Trash2 className="w-3.5 h-3.5" /> Clear Cache (4.2 MB)
+                    <button
+                      onClick={() => alert('Cache cleared successfully.')}
+                      className="w-fit px-3 py-1.5 text-[11px] font-bold border rounded-lg flex items-center gap-1.5 transition-all active:scale-95"
+                      style={{
+                        backgroundColor: '#fff1f2',
+                        borderColor: '#fecdd3',
+                        color: '#e11d48'
+                      }}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Clear Cache
                     </button>
                   </div>
 
-                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex flex-col justify-between gap-3">
+                  <div className="p-4 border rounded-xl flex flex-col justify-between gap-3" style={softStyle}>
                     <div>
-                      <h4 className="text-xs font-bold text-slate-800">Export Settings Logs</h4>
-                      <p className="text-[11px] text-slate-400 mt-0.5">Compile all configurations and layout achievements into a downloadable manifest structural JSON document.</p>
+                      <h4 className="text-xs font-bold" style={{ color: activeTheme.text }}>
+                        Export Settings Logs
+                      </h4>
+                      <p className="text-[11px] mt-0.5" style={{ color: activeTheme.textMuted }}>
+                        Compile settings into a downloadable demo manifest.
+                      </p>
                     </div>
-                    <button onClick={() => alert("Compiling log data...")} className="w-fit px-3 py-1.5 text-[11px] font-bold bg-slate-100 border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-200 flex items-center gap-1.5 transition-all active:scale-95">
+                    <button
+                      onClick={() => alert('Compiling log data...')}
+                      className="w-fit px-3 py-1.5 text-[11px] font-bold border rounded-lg flex items-center gap-1.5 transition-all active:scale-95"
+                      style={{
+                        backgroundColor: activeTheme.cardBg,
+                        borderColor: activeTheme.border,
+                        color: activeTheme.text
+                      }}
+                    >
                       <Download className="w-3.5 h-3.5" /> Export Data Logs
                     </button>
                   </div>
@@ -248,23 +385,27 @@ export default function SettingsTab({ currentTheme = 'orange', onThemeChange }) 
               </div>
             )}
 
-            {/* BUTTON FOOTER */}
-            <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-              <button className="px-4 py-2 text-xs font-bold border bg-white hover:bg-slate-50 text-slate-700 rounded-lg transition-colors">
+            <div className="flex justify-end gap-3 pt-4 border-t" style={{ borderColor: activeTheme.border }}>
+              <button
+                className="px-4 py-2 text-xs font-bold border rounded-lg transition-colors"
+                style={{
+                  backgroundColor: activeTheme.cardBg,
+                  borderColor: activeTheme.border,
+                  color: activeTheme.text
+                }}
+              >
                 Discard Changes
               </button>
-              <button 
+              <button
                 onClick={handleSave}
                 className="px-5 py-2 text-xs font-bold text-white shadow-xs flex items-center gap-1.5 rounded-lg active:scale-95 transition-all hover:opacity-95"
-                style={{ backgroundColor: theme.primary }}
+                style={{ backgroundColor: activeTheme.primary }}
               >
                 <Save className="w-3.5 h-3.5" /> Save Configuration
               </button>
             </div>
-
           </div>
         </div>
-
       </div>
     </div>
   );

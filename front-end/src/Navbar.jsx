@@ -30,7 +30,11 @@ export default function Navbar({ currentTab, setCurrentTab, currentTheme, setCur
         <div>
           {/* Brand Identity Label */}
           <div className="flex items-center gap-2 mb-8 px-2 select-none">
-            <span className="text-xl">🐾</span>
+            <span className="text-xl"><img
+  src="/assets/logo.png"
+  alt="Purrst Step logo"
+  className="w-7 h-7 object-contain"
+/></span>
             <span className="text-base font-semibold text-slate-800">Purrst Step</span>
           </div>
 

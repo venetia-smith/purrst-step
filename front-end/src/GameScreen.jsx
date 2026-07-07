@@ -1092,7 +1092,11 @@ export default function GameScreen({ currentTheme = 'orange' }) {
                       boxShadow: '0 10px 24px rgba(15, 23, 42, 0.07)'
                     }}
                   >
-                    <div className="absolute -right-4 -top-4 text-6xl opacity-10 select-none">🐾</div>
+                    <div className="absolute -right-4 -top-4 text-6xl opacity-10 select-none"><img
+  src="/assets/logo.png"
+  alt="Purrst Step logo"
+  className="w-7 h-7 object-contain"
+/></div>
                     <div
                       className="w-10 h-10 rounded-2xl flex items-center justify-center border shadow-sm mb-3"
                       style={{ backgroundColor: theme.cardBg, borderColor: theme.border, color: theme.primary }}
@@ -1527,7 +1531,11 @@ export default function GameScreen({ currentTheme = 'orange' }) {
       <div className="flex justify-between items-center gap-4">
         <div>
           <h2 className="text-lg font-bold tracking-tight flex items-center gap-2">
-            <span>🐾</span> Purrst Step Learn Room
+            <span><img
+  src="/assets/logo.png"
+  alt="Purrst Step logo"
+  className="w-7 h-7 object-contain"
+/></span> Purrst Step Learn Room
           </h2>
 
           <p className="text-[11px] text-slate-500">

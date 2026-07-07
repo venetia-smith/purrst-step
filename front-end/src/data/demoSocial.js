@@ -90,7 +90,7 @@ export const demoPosts = [
       'Whiskers found the warmest square of sunlight today and refused to move for almost an hour. Tiny rescue-cat victories feel so special. ☀️🐱',
     tags: ['AdoptDontShop', 'RescueCats'],
     hasImage: true,
-    imageUrl: '/assets/generated/feed-whiskers-sunbeam.svg',
+    imageUrl: 'front-end\public\assets\feed-whiskers-sunbeam.png',
     imageAlt: 'Original illustration of a rescue cat resting in a sunbeam',
     likes: 128,
     shares: 12,
