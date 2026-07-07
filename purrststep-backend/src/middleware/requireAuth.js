@@ -10,7 +10,7 @@ export async function requireAuth(req, res, next) {
       });
     }
 
-    const token = authHeader.replace("Bearer ", "").trim();
+    const token = authHeader.slice("Bearer ".length).trim();
 
     if (!token) {
       return res.status(401).json({

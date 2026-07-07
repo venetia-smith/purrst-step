@@ -13,27 +13,44 @@ import notificationsRoutes from "./routes/notifications.routes.js";
 
 const app = express();
 
+const allowedOrigins = new Set([
+  env.frontendUrl,
+  "http://localhost:5173",
+  "https://purrst-step-4iv6.vercel.app"
+]);
+
 app.disable("x-powered-by");
+app.locals.isDev = env.nodeEnv !== "production";
 
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false
+  })
+);
 
-app.use(cors({
-  origin: [
-    env.frontendUrl,
-    "http://localhost:5173",
-    "https://purrst-step-4iv6.vercel.app"
-  ],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.has(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true
+  })
+);
 
 app.use(express.json({ limit: "100kb" }));
 
-app.use(rateLimit({
-  windowMs: 60 * 1000,
-  limit: 120,
-  standardHeaders: true,
-  legacyHeaders: false
-}));
+app.use(
+  rateLimit({
+    windowMs: 60 * 1000,
+    limit: 120,
+    standardHeaders: true,
+    legacyHeaders: false
+  })
+);
 
 app.get("/health", (req, res) => {
   res.json({

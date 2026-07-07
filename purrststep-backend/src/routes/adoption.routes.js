@@ -4,6 +4,21 @@ import { supabaseAdmin } from "../supabase.js";
 
 const router = express.Router();
 
+function sanitizeSearchQuery(value) {
+  const search = String(value || "")
+    .trim()
+    .slice(0, 60)
+    .replace(/[%_,()]/g, "");
+
+  if (!search) return "";
+
+  if (!/^[a-zA-Z0-9\s-]+$/.test(search)) {
+    return null;
+  }
+
+  return search;
+}
+
 router.get("/listings", async (req, res) => {
   try {
     const { type, q } = req.query;
@@ -23,24 +38,30 @@ router.get("/listings", async (req, res) => {
     }
 
     if (q && String(q).trim().length > 0) {
-      const search = String(q).trim();
+      const search = sanitizeSearchQuery(q);
 
-      query = query.or(
-        `name.ilike.%${search}%,breed.ilike.%${search}%,location.ilike.%${search}%`
-      );
+      if (search === null) {
+        return res.status(400).json({ error: "Invalid search query" });
+      }
+
+      if (search) {
+        query = query.or(
+          `name.ilike.%${search}%,breed.ilike.%${search}%,location.ilike.%${search}%`
+        );
+      }
     }
 
     const { data, error } = await query;
 
     if (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(400).json({ error: "Failed to fetch adoption listings" });
     }
 
     return res.json({ listings: data });
   } catch (err) {
+    console.error("Adoption listings fetch failed:", err);
     return res.status(500).json({
-      error: "Failed to fetch adoption listings",
-      details: err.message
+      error: "Failed to fetch adoption listings"
     });
   }
 });
@@ -76,8 +97,7 @@ router.post("/listings/:id/favorite", requireAuth, async (req, res) => {
 
     if (error) {
       return res.status(400).json({
-        error: "Failed to favorite adoption listing",
-        details: error.message
+        error: "Failed to favorite adoption listing"
       });
     }
 
@@ -93,9 +113,9 @@ router.post("/listings/:id/favorite", requireAuth, async (req, res) => {
       message: "Adoption listing added to favorites"
     });
   } catch (err) {
+    console.error("Favorite adoption listing failed:", err);
     return res.status(500).json({
-      error: "Favorite adoption listing failed",
-      details: err.message
+      error: "Favorite adoption listing failed"
     });
   }
 });
@@ -114,8 +134,7 @@ router.delete("/listings/:id/favorite", requireAuth, async (req, res) => {
 
     if (error) {
       return res.status(400).json({
-        error: "Failed to remove adoption favorite",
-        details: error.message
+        error: "Failed to remove adoption favorite"
       });
     }
 
@@ -124,9 +143,9 @@ router.delete("/listings/:id/favorite", requireAuth, async (req, res) => {
       message: "Adoption listing removed from favorites"
     });
   } catch (err) {
+    console.error("Remove adoption favorite failed:", err);
     return res.status(500).json({
-      error: "Remove adoption favorite failed",
-      details: err.message
+      error: "Remove adoption favorite failed"
     });
   }
 });
