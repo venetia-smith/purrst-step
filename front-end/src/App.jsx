@@ -61,6 +61,7 @@ export default function App() {
   const [currentTab, setCurrentTab] = useState('home');
   const [currentTheme, setCurrentTheme] = useState('orange');
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [selectedProfileId, setSelectedProfileId] = useState(null);
 
   const [session, setSession] = useState(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -114,16 +115,34 @@ export default function App() {
     }, 1000);
   };
 
+  const handleOpenProfile = (profileId = null) => {
+    setSelectedProfileId(profileId);
+    setCurrentTab('profile');
+  };
+
   const renderTabContent = () => {
     switch (currentTab) {
       case 'home':
-        return <HomeTab theme={theme} onNavigate={(tab) => setCurrentTab(tab)} />;
+        return (
+          <HomeTab
+            theme={theme}
+            onNavigate={(tab) => setCurrentTab(tab)}
+            onOpenProfile={handleOpenProfile}
+          />
+        );
       case 'game':
         return <GameScreen theme={theme} currentTheme={currentTheme} isDarkMode={isDarkMode} />;
       case 'adoption':
         return <MarketplaceTab theme={theme} currentTheme={currentTheme} isDarkMode={isDarkMode} />;
       case 'profile':
-        return <ProfileTab theme={theme} isDarkMode={isDarkMode} />;
+        return (
+          <ProfileTab
+            theme={theme}
+            isDarkMode={isDarkMode}
+            selectedProfileId={selectedProfileId}
+            onBackToOwnProfile={() => setSelectedProfileId(null)}
+          />
+        );
       case 'notifications':
         return <NotificationsTab theme={theme} currentTheme={currentTheme} />;
       case 'settings':
@@ -150,7 +169,13 @@ export default function App() {
           </div>
         );
       default:
-        return <HomeTab theme={theme} onNavigate={(tab) => setCurrentTab(tab)} />;
+        return (
+          <HomeTab
+            theme={theme}
+            onNavigate={(tab) => setCurrentTab(tab)}
+            onOpenProfile={handleOpenProfile}
+          />
+        );
     }
   };
 
@@ -211,7 +236,12 @@ export default function App() {
               return (
                 <button
                   key={item.id}
-                  onClick={() => setCurrentTab(item.id)}
+                  onClick={() => {
+                    if (item.id === 'profile') {
+                      setSelectedProfileId(null);
+                    }
+                    setCurrentTab(item.id);
+                  }}
                   className={`w-full flex items-center gap-3 px-4 py-2.5 text-xs font-medium rounded-xl transition-all duration-150 group active:scale-98 ${
                     isActive ? 'shadow-sm' : 'hover:opacity-100'
                   }`}
@@ -310,7 +340,7 @@ export default function App() {
               className="w-8 h-8 rounded-full border flex items-center justify-center cursor-pointer transition-all shadow-sm active:scale-95 select-none"
               style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
               title="View your Profile"
-              onClick={() => setCurrentTab('profile')}
+              onClick={() => handleOpenProfile(null)}
             >
               <span className="text-sm">🐱</span>
             </div>
