@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-label="Safe Room Checklist">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#eff6ff"/><stop offset="100%" stop-color="#bfdbfe"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#0f172a" flood-opacity=".18"/></filter>
+  </defs>
+  <rect width="1200" height="800" rx="52" fill="url(#bg)"/>
+  <circle cx="140" cy="130" r="80" fill="#fff" opacity=".22"/><circle cx="1110" cy="680" r="140" fill="#fff" opacity=".18"/>
+  <path d="M90 625c190-82 357-52 520-10 192 49 342 70 520-20v205H90z" fill="#fff" opacity=".28"/>
+  
+        <rect x="760" y="330" width="145" height="92" rx="24" fill="#dbeafe" stroke="#60a5fa" stroke-width="10"/>
+        <rect x="930" y="360" width="115" height="70" rx="26" fill="#dcfce7" stroke="#22c55e" stroke-width="10"/>
+        <circle cx="987" cy="395" r="22" fill="#bbf7d0"/>
+        <path d="M800 238h250" stroke="#94a3b8" stroke-width="12" stroke-linecap="round"/>
+        <path d="M825 238v65M900 238v65M975 238v65" stroke="#94a3b8" stroke-width="10" stroke-linecap="round"/>
+  <g filter="url(#shadow)" transform="translate(0 8)">
+    <ellipse cx="520" cy="573" rx="235" ry="42" fill="#64748b" opacity=".14"/>
+    <path d="M410 465c-72-120-22-225 112-225s183 105 112 225c77 21 124 83 124 155H286c0-72 47-134 124-155Z" fill="#eff6ff" stroke="#3b82f6" stroke-width="12" stroke-linejoin="round"/>
+    <path d="M420 260l42-108 72 94M625 246l72-94 42 108" fill="#eff6ff" stroke="#3b82f6" stroke-width="12" stroke-linejoin="round"/>
+    <circle cx="532" cy="352" r="126" fill="#eff6ff"/>
+    <circle cx="500" cy="342" r="15" fill="#1f2937"/><circle cx="625" cy="342" r="15" fill="#1f2937"/>
+    <path d="M552 385q11 13 22 0" fill="none" stroke="#1f2937" stroke-width="9" stroke-linecap="round"/>
+    <path d="M574 397q-35 42-76 13M574 397q35 42 76 13" fill="none" stroke="#1f2937" stroke-width="8" stroke-linecap="round"/>
+    <path d="M410 380c-70-20-126-18-178 6M411 416c-72 0-128 16-175 48M690 380c70-20 126-18 178 6M690 416c72 0 128 16 175 48" fill="none" stroke="#3b82f6" stroke-width="6" stroke-linecap="round" opacity=".5"/>
+    <path d="M300 570c-78 3-138 47-154 106" fill="none" stroke="#3b82f6" stroke-width="20" stroke-linecap="round"/>
+  </g>
+  <text x="600" y="700" text-anchor="middle" font-size="44" font-weight="800" font-family="Arial, sans-serif" fill="#172554">Safe Room Checklist</text>
+  <text x="600" y="738" text-anchor="middle" font-size="23" font-family="Arial, sans-serif" fill="#475569">A calm start for new cats</text>
+</svg>

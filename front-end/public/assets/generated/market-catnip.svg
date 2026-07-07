@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-label="Organic Catnip">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f0fdf4"/><stop offset="100%" stop-color="#bbf7d0"/></linearGradient><filter id="shadow"><feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#0f172a" flood-opacity=".18"/></filter></defs>
+  <rect width="1200" height="800" rx="52" fill="url(#bg)"/>
+  <circle cx="150" cy="145" r="80" fill="#fff" opacity=".22"/><circle cx="1060" cy="650" r="140" fill="#fff" opacity=".18"/>
+  <path d="M70 650c160-75 300-50 450-15 240 55 425 50 610-45v210H70z" fill="#fff" opacity=".28"/>
+  <g filter="url(#shadow)">
+        <rect x="455" y="235" width="290" height="390" rx="50" fill="#dcfce7" stroke="#22c55e" stroke-width="14"/>
+        <path d="M505 235c30-68 160-68 190 0" fill="#bbf7d0" stroke="#22c55e" stroke-width="10"/>
+        <path d="M600 520c-60-90-5-170 100-205 18 100-22 176-100 205Z" fill="#86efac" stroke="#16a34a" stroke-width="10"/>
+        <path d="M600 520c-75-70-58-150 30-210 38 94 23 168-30 210Z" fill="#bbf7d0" stroke="#16a34a" stroke-width="10"/>
+        <text x="600" y="595" text-anchor="middle" font-size="34" font-weight="800" font-family="Arial" fill="#166534">CATNIP</text></g>
+  <text x="600" y="710" text-anchor="middle" font-size="44" font-weight="800" font-family="Arial, sans-serif" fill="#172554">Organic Catnip</text>
+  <text x="600" y="748" text-anchor="middle" font-size="23" font-family="Arial, sans-serif" fill="#475569">Original illustrated catnip pack</text>
+</svg>
